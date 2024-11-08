@@ -6,12 +6,33 @@ This project utilizes procedural generation techniques to create a dynamic and i
 
 ----
 
-# Installation
+# Installation Steps
+
+1. Clone the repository:
+```
+git clone <repos_link>
+```
+
+2. Install both vite and three into the projcets directory:
+```
+npm install vite
+npm install three
+```
+
 
 ----
 
 # Usage
 
+1. While in project directory
+```
+npx vite
+```
+
 ----
 
 # Colaborators
+
+- [Sean Ouellette](https://github.com/SOuellette22): [ouellettese04@gmail.com](ouellettese04@gmail.com)
+- [Seth Holtzman](https://github.com/SethMC26):
+- [Gaby Zola](https://github.com/gabyzola):
