@@ -76,20 +76,69 @@
         const ambientLight = new THREE.AmbientLight(0x404040, 2); 
         scene.add(ambientLight);
 
-        // Set camera position and make it a bit higher
-        camera.position.set(0, 60, 100);
-        camera.lookAt(terrain.position);
+        // Camera controls
+        const speed = 0.5; // Walking speed
+        let cameraDirection = new THREE.Vector3();
+        let isMovingForward = false;
+        let isMovingBackward = false;
+        let isMovingLeft = false;
+        let isMovingRight = false;
 
+        // Set initial camera position close to ground and set a random direction
+        camera.position.set(0, 10, 0); 
+        updateTerrain(); 
+
+        function moveCamera() {
+            if (isMovingForward) {
+                camera.getWorldDirection(cameraDirection);
+                camera.position.add(cameraDirection.multiplyScalar(speed));
+            }
+            if (isMovingBackward) {
+                camera.getWorldDirection(cameraDirection);
+                camera.position.add(cameraDirection.multiplyScalar(-speed));
+            }
+            if (isMovingLeft) {
+                camera.position.x -= speed;
+            }
+            if (isMovingRight) {
+                camera.position.x += speed;
+            }
+            
+    
+            const terrainHeight = getTerrainHeight(camera.position.x, camera.position.z);
+            camera.position.y = terrainHeight + 5; 
+        }
+
+        // Get terrain height based on camera position
+        function getTerrainHeight(x, z) {
+            const noiseX = x / noiseScale;
+            const noiseZ = z / noiseScale;
+            return noise.perlin2(noiseX, noiseZ) * heightMultiplier;
+        }
+
+        // Render loop
         function animate() {
             requestAnimationFrame(animate);
-            
-            offsetY += scrollSpeed; 
-            updateTerrain();
-
+            moveCamera();
             renderer.render(scene, camera);
         }
         animate();
 
+        // Handle keydown and keyup events for movement
+        window.addEventListener('keydown', (event) => {
+            if (event.key === 'w') isMovingForward = true;
+            if (event.key === 's') isMovingBackward = true;
+            if (event.key === 'a') isMovingLeft = true;
+            if (event.key === 'd') isMovingRight = true;
+        });
+        window.addEventListener('keyup', (event) => {
+            if (event.key === 'w') isMovingForward = false;
+            if (event.key === 's') isMovingBackward = false;
+            if (event.key === 'a') isMovingLeft = false;
+            if (event.key === 'd') isMovingRight = false;
+        });
+
+        // Adjust on window resize for full-screen rendering
         window.addEventListener('resize', () => {
             renderer.setSize(window.innerWidth, window.innerHeight);
             camera.aspect = window.innerWidth / window.innerHeight;
