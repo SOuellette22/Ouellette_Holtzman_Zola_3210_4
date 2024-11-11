@@ -69,6 +69,7 @@
             requestAnimationFrame(animate);
             
             offsetY += scrollSpeed; 
+            updateTerrain();
 
             renderer.render(scene, camera);
         }
