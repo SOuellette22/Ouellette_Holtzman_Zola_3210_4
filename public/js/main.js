@@ -94,6 +94,18 @@ function keyHandler(e) {
         case 'm': // Q toggles shadows on and off
             sun.castShadow = !sun.castShadow;
         break;
+        case 'p': // p will speed up the speed of the day night cycle up till 4 times speed
+            if (sun.speed < Math.PI / 30) {
+                sun.speed *= 2;
+                moon.speed *= 2;
+            }
+        break;
+        case 'o': // o will slow down the speed of the day night cycle down till 1/4 speed
+            if (sun.speed > Math.PI / 480) {
+                sun.speed /= 2;
+                moon.speed /= 2;
+            }
+        break;
     }
 }
 

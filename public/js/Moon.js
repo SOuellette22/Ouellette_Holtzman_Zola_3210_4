@@ -19,16 +19,28 @@ export default class Moon extends THREE.DirectionalLight{
     }
 
     update(d) {
+        const x = this.position.x;
+
         this.rotateAboutWorldAxis(this, new THREE.Vector3(0, 0, 1), this.speed * d);
         this.rotateAboutWorldAxis(this.mesh, new THREE.Vector3(0, 0, 1), this.speed * d);
         this.mesh.lookAt(0,0,0);
-        if (this.position.y <= 20 && this.intensity > 0) {
-            this.intensity -= 0.005;
+        
+        if (x <= this.distance && x >= Math.cos(Math.PI/18) * this.distance) {
+            var cp = this.distance;
+            var np = Math.cos(Math.PI/18) * this.distance;
+            this.intensity = this.findIntensity(cp, np, 0, 0.1, x);
         }
 
-        if (this.position.y >= -20 && this.intensity < 0.1) {
-            this.intensity += 0.005;
+        if (x <= Math.cos(Math.PI*17/18) * this.distance && x >= -this.distance) {
+            var cp = Math.cos(Math.PI*17/18) * this.distance;
+            var np = -this.distance;
+            this.intensity = this.findIntensity(cp, np, 0.1, 0, x);
         }
+
+        if (this.position.y < 0) {
+            this.intensity = 0;
+        }
+
     }
 
     rotateAboutWorldAxis(object, axis, angle) {
@@ -39,6 +51,14 @@ export default class Moon extends THREE.DirectionalLight{
         object.position.x = newPos.x ;
         object.position.y = newPos.y ;
         object.position.z = newPos.z ;
+    }
+
+    findIntensity(cp, np, ci, ni, p) {
+        var intensity = 0;
+
+        intensity = ci + (ni - ci) * (p - cp) / (np - cp);
+
+        return intensity;
     }
 
 }
