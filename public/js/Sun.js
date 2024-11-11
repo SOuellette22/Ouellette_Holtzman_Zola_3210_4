@@ -88,8 +88,8 @@ export default class Sun extends THREE.DirectionalLight{
             this.intensity -= 0.003;
         }
 
-        if (this.position.y >= 20 && this.intensity < 0.5) {
-            this.intensity += 0.005;
+        if (this.position.y >= -10 && this.intensity < 0.5) {
+            this.intensity += 0.01;
         }
 
         this.rotateAboutWorldAxis(this, new THREE.Vector3(0, 0, 1), this.speed * d);
