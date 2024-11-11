@@ -1,149 +1,159 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Unique Infinite 3D Terrain</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/josephg/noisejs/perlin.js"></script>
-</head>
-<body style="margin: 0; overflow: hidden;">
+  </head>
+  <body style="margin: 0; overflow: hidden">
     <script>
-        // Set up the scene, camera, and renderer
-        const scene = new THREE.Scene();
-        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-        const renderer = new THREE.WebGLRenderer();
+      // Set up the scene, camera, and renderer
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        75,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      const renderer = new THREE.WebGLRenderer();
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      // Terrain parameters
+      const gridSize = 200;
+      const terrainGeometry = new THREE.PlaneGeometry(
+        gridSize,
+        gridSize,
+        gridSize,
+        gridSize
+      );
+
+      const randomSeed = Math.random();
+      noise.seed(randomSeed);
+
+      // Perlin noise and noise parameters
+      noise.seed(Math.random());
+      const noiseScale = 10;
+      const heightMultiplier = 10;
+      let offsetX = 0;
+      let offsetY = 0;
+      const scrollSpeed = 0.05;
+      const movementThreshold = 100;
+
+      // update terrain based on Perlin noise
+      function updateTerrain() {
+        for (let i = 0; i < terrainGeometry.attributes.position.count; i++) {
+          const x = terrainGeometry.attributes.position.getX(i) / noiseScale + offsetX;
+          const y = terrainGeometry.attributes.position.getY(i) / noiseScale + offsetY;
+          const height = noise.perlin2(x, y) * heightMultiplier;
+          terrainGeometry.attributes.position.setZ(i, height);
+        }
+        terrainGeometry.attributes.position.needsUpdate = true;
+        terrainGeometry.computeVertexNormals();
+      }
+
+      // Load texture
+      const textureLoader = new THREE.TextureLoader();
+      const terrainTexture = textureLoader.load("moss.webp");
+      terrainTexture.wrapS = terrainTexture.wrapT = THREE.RepeatWrapping;
+      terrainTexture.repeat.set(20, 20);
+
+      const terrainMaterial = new THREE.MeshStandardMaterial({
+        map: terrainTexture,
+        flatShading: true,
+      });
+
+      // terrain mesh
+      const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
+      terrain.rotation.x = -Math.PI / 2;
+      scene.add(terrain);
+
+      //Lighting
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(50, 50, 50);
+      scene.add(light);
+      const ambientLight = new THREE.AmbientLight(0x404040, 2);
+      scene.add(ambientLight);
+
+      // Camera controls
+      const speed = 0.5; // Walking speed
+      let isMovingForward = false;
+      let isMovingBackward = false;
+      let isMovingLeft = false;
+      let isMovingRight = false;
+
+      camera.position.set(0, 10, 30);
+      camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+      // Get terrain height at given camera position
+      function getTerrainHeight(x, z) {
+        const noiseX = x / noiseScale;
+        const noiseZ = z / noiseScale;
+        return noise.perlin2(noiseX, noiseZ) * heightMultiplier;
+      }
+
+      // Update camera height to match terrain
+      function updateCameraPosition() {
+        if (isMovingForward) camera.position.z -= speed;
+        if (isMovingBackward) camera.position.z += speed;
+        if (isMovingLeft) camera.position.x += speed;
+        if (isMovingRight) camera.position.x -= speed;
+
+        // Update the camera height based on terrain height
+        const terrainHeight = getTerrainHeight(
+          camera.position.x,
+          camera.position.z
+        );
+        camera.position.y = terrainHeight + 5;
+      }
+
+      // Update terrain and camera position for infinite effect
+      function updateOffsets() {
+        // If the camera has moved far enough in any direction, update the terrain offset
+        if (Math.abs(camera.position.x) > movementThreshold) {
+          offsetX += (camera.position.x > 0 ? 1 : -1) * movementThreshold;
+          camera.position.x = camera.position.x > 0 ? -movementThreshold : movementThreshold;
+        }
+        if (Math.abs(camera.position.z) > movementThreshold) {
+          offsetY += (camera.position.z > 0 ? 1 : -1) * movementThreshold;
+          camera.position.z = camera.position.z > 0 ? -movementThreshold : movementThreshold;
+        }
+      }
+
+
+      // Render loop
+      function animate() {
+        requestAnimationFrame(animate);
+
+        updateTerrain();
+        updateOffsets();
+        updateCameraPosition();
+
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      // keydown and keyup events for movement
+      window.addEventListener("keydown", (event) => {
+        if (event.key === "w") isMovingForward = true;
+        if (event.key === "s") isMovingBackward = true;
+        if (event.key === "a") isMovingLeft = true;
+        if (event.key === "d") isMovingRight = true;
+      });
+      window.addEventListener("keyup", (event) => {
+        if (event.key === "w") isMovingForward = false;
+        if (event.key === "s") isMovingBackward = false;
+        if (event.key === "a") isMovingLeft = false;
+        if (event.key === "d") isMovingRight = false;
+      });
+
+      window.addEventListener("resize", () => {
         renderer.setSize(window.innerWidth, window.innerHeight);
-        document.body.appendChild(renderer.domElement);
-
-        // Terrain parameters
-        const gridSize = 200; 
-       // const gridSpacing = 1;
-        const terrainGeometry = new THREE.PlaneGeometry(gridSize, gridSize, gridSize, gridSize);
-
-        const randomSeed = Math.random();
-        noise.seed(randomSeed);
-
-        // Perlin noise and noise parameters
-        noise.seed(Math.random()); 
-        const noiseScale = 10;    
-        const heightMultiplier = 10; 
-        let offsetX = 0;  
-        let offsetY = 0; 
-        const scrollSpeed = 0.05; 
-
-        // Function to update terrain based on Perlin noise and offsets
-        function updateTerrain() {
-            for (let i = 0; i < terrainGeometry.attributes.position.count; i++) {
-                const x = (terrainGeometry.attributes.position.getX(i) / noiseScale) + offsetX;
-                const y = (terrainGeometry.attributes.position.getY(i) / noiseScale) + offsetY;
-                
-                const height = noise.perlin2(x, y) * heightMultiplier;
-                terrainGeometry.attributes.position.setZ(i, height);
-            }
-            terrainGeometry.attributes.position.needsUpdate = true;
-            terrainGeometry.computeVertexNormals(); 
-        }
-
-        // Material for the terrain
-       // const terrainMaterial = new THREE.MeshStandardMaterial({
-       //     color: 0x88cc88,
-       //     wireframe: false,
-       //     flatShading: true
-       // });
-
-       // Load texture
-       const textureLoader = new THREE.TextureLoader();
-        const terrainTexture = textureLoader.load('moss.webp');
-        terrainTexture.wrapS = terrainTexture.wrapT = THREE.RepeatWrapping;
-        terrainTexture.repeat.set(20, 20); 
-
-
-        const terrainMaterial = new THREE.MeshStandardMaterial({
-            map: terrainTexture,
-            flatShading: true
-        });
-
-        // mesh
-        const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
-        terrain.rotation.x = -Math.PI / 2; 
-        scene.add(terrain);
-
-        // Add lighting
-        const light = new THREE.DirectionalLight(0xffffff, 1);
-        light.position.set(50, 50, 50);
-        scene.add(light);
-        const ambientLight = new THREE.AmbientLight(0x404040, 2); 
-        scene.add(ambientLight);
-
-        // Camera controls
-        const speed = 0.5; // Walking speed
-        let cameraDirection = new THREE.Vector3();
-        let isMovingForward = false;
-        let isMovingBackward = false;
-        let isMovingLeft = false;
-        let isMovingRight = false;
-
-        // Set initial camera position close to ground and set a random direction
-        camera.position.set(0, 10, 0); 
-        updateTerrain(); 
-
-        function moveCamera() {
-            if (isMovingForward) {
-                camera.getWorldDirection(cameraDirection);
-                camera.position.add(cameraDirection.multiplyScalar(speed));
-            }
-            if (isMovingBackward) {
-                camera.getWorldDirection(cameraDirection);
-                camera.position.add(cameraDirection.multiplyScalar(-speed));
-            }
-            if (isMovingLeft) {
-                camera.position.x -= speed;
-            }
-            if (isMovingRight) {
-                camera.position.x += speed;
-            }
-            
-    
-            const terrainHeight = getTerrainHeight(camera.position.x, camera.position.z);
-            camera.position.y = terrainHeight + 5; 
-        }
-
-        // Get terrain height based on camera position
-        function getTerrainHeight(x, z) {
-            const noiseX = x / noiseScale;
-            const noiseZ = z / noiseScale;
-            return noise.perlin2(noiseX, noiseZ) * heightMultiplier;
-        }
-
-        // Render loop
-        function animate() {
-            requestAnimationFrame(animate);
-            moveCamera();
-            renderer.render(scene, camera);
-        }
-        animate();
-
-        // Handle keydown and keyup events for movement
-        window.addEventListener('keydown', (event) => {
-            if (event.key === 'w') isMovingForward = true;
-            if (event.key === 's') isMovingBackward = true;
-            if (event.key === 'a') isMovingLeft = true;
-            if (event.key === 'd') isMovingRight = true;
-        });
-        window.addEventListener('keyup', (event) => {
-            if (event.key === 'w') isMovingForward = false;
-            if (event.key === 's') isMovingBackward = false;
-            if (event.key === 'a') isMovingLeft = false;
-            if (event.key === 'd') isMovingRight = false;
-        });
-
-        // Adjust on window resize for full-screen rendering
-        window.addEventListener('resize', () => {
-            renderer.setSize(window.innerWidth, window.innerHeight);
-            camera.aspect = window.innerWidth / window.innerHeight;
-            camera.updateProjectionMatrix();
-        });
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+      });
     </script>
-</body>
+  </body>
 </html>
