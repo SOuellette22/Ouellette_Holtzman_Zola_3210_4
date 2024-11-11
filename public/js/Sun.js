@@ -70,10 +70,19 @@ export default class Sun extends THREE.DirectionalLight{
             } 
             // 0 to PI/18
             else if (x <= Math.cos(Math.PI*17/18) * this.distance) {
-                this.color.r -= 0.0003;
+                this.color.r += 0.0001;
                 this.color.g -= 0.0012;
                 this.color.b -= 0.00058;
                 this.mesh.material.color.setRGB(this.color.r, this.color.g, this.color.b);
+                if (this.color.r >= 242/255) {
+                    this.color.r = 242/255;
+                }
+                if (this.color.g <= 93/255) {
+                    this.color.g = 93/255;
+                }
+                if (this.color.b <= 108/255) {
+                    this.color.b = 108/255;
+                }
             }
             else {
                 this.color.setRGB(1,1,1);
@@ -81,14 +90,14 @@ export default class Sun extends THREE.DirectionalLight{
             }
 
         } else {
-            this.color.setHex(0xee5d6c);
+            this.color.setRGB(242/255,93/255,108/255);
         }
 
-        if (this.position.y <= 10 && this.intensity > 0) {
-            this.intensity -= 0.003;
+        if (this.position.y <= 20 && this.intensity > 0) {
+            this.intensity -= 0.01;
         }
 
-        if (this.position.y >= -10 && this.intensity < 0.5) {
+        if (this.position.y >= -20 && this.intensity < 0.5) {
             this.intensity += 0.01;
         }
 

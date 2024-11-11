@@ -22,12 +22,12 @@ export default class Moon extends THREE.DirectionalLight{
         this.rotateAboutWorldAxis(this, new THREE.Vector3(0, 0, 1), this.speed * d);
         this.rotateAboutWorldAxis(this.mesh, new THREE.Vector3(0, 0, 1), this.speed * d);
         this.mesh.lookAt(0,0,0);
-        if (this.position.y <= 10 && this.intensity > 0) {
-            this.intensity -= 0.004;
+        if (this.position.y <= 20 && this.intensity > 0) {
+            this.intensity -= 0.005;
         }
 
-        if (this.position.y >= -10 && this.intensity < 0.1) {
-            this.intensity += 0.004;
+        if (this.position.y >= -20 && this.intensity < 0.1) {
+            this.intensity += 0.005;
         }
     }
 
