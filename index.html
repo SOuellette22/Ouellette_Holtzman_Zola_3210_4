@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full-Screen Infinite 3D Terrain</title>
+    <title>Unique Infinite 3D Terrain</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/josephg/noisejs/perlin.js"></script>
 </head>
@@ -18,8 +18,11 @@
 
         // Terrain parameters
         const gridSize = 200; 
-        const gridSpacing = 1;
+       // const gridSpacing = 1;
         const terrainGeometry = new THREE.PlaneGeometry(gridSize, gridSize, gridSize, gridSize);
+
+        const randomSeed = Math.random();
+        noise.seed(randomSeed);
 
         // Perlin noise and noise parameters
         noise.seed(Math.random()); 
@@ -43,9 +46,21 @@
         }
 
         // Material for the terrain
+       // const terrainMaterial = new THREE.MeshStandardMaterial({
+       //     color: 0x88cc88,
+       //     wireframe: false,
+       //     flatShading: true
+       // });
+
+       // Load texture
+       const textureLoader = new THREE.TextureLoader();
+        const terrainTexture = textureLoader.load('moss.webp');
+        terrainTexture.wrapS = terrainTexture.wrapT = THREE.RepeatWrapping;
+        terrainTexture.repeat.set(20, 20); 
+
+
         const terrainMaterial = new THREE.MeshStandardMaterial({
-            color: 0x88cc88,
-            wireframe: false,
+            map: terrainTexture,
             flatShading: true
         });
 
