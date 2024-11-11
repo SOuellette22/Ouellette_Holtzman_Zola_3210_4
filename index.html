@@ -3,18 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>3D Terrain with Perlin Noise</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/josephg/noisejs/perlin.js"></script>
 </head>
-<body>
-    <script type="importmap">
-        {
-            "imports": {
-                "three": "https://unpkg.com/three@0.138.0/build/three.module.js"
-            }
-        }
-    </script>
+<body style="margin: 0; overflow: hidden;">
+    <script>
+        // Set up the scene, camera, and renderer
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.body.appendChild(renderer.domElement);
 
-    <script src="main.js"></script>
-    
+        // Set terrain parameters
+        const gridSize = 100;
+        const gridSpacing = 1;
+        const terrainGeometry = new THREE.PlaneGeometry(gridSize, gridSize, gridSize, gridSize);
+
+        // Initialize Perlin noise and configure noise parameters
+        noise.seed(Math.random()); 
+        const noiseScale = 10;    
+        const heightMultiplier = 10; 
+
+        // Adjust vertices with Perlin noise for smoother terrain
+        for (let i = 0; i < terrainGeometry.attributes.position.count; i++) {
+            const x = terrainGeometry.attributes.position.getX(i) / noiseScale;
+            const y = terrainGeometry.attributes.position.getY(i) / noiseScale;
+
+            const height = noise.perlin2(x, y) * heightMultiplier;
+            terrainGeometry.attributes.position.setZ(i, height);
+        }
+
+        // Recompute normals for correct shading
+        terrainGeometry.computeVertexNormals();
+
+
+        //Load Texture 
+        const textureLoader = new THREE.TextureLoader();
+        const terrainTexture = textureLoader.load('/Users/GSZ2004/Downloads/grass.avif'); 
+        terrainTexture.wrapS = terrainTexture.wrapT = THREE.RepeatWrapping;
+        terrainTexture.repeat.set(10, 10); 
+
+        // Create a material for the terrain
+        const terrainMaterial = new THREE.MeshStandardMaterial({
+            color: 0x88cc88,
+            wireframe: false,
+            flatShading: true
+        });
+
+        // Create the mesh
+        const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
+        terrain.rotation.x = -Math.PI / 2; 
+        scene.add(terrain);
+
+        // Add lighting
+        const light = new THREE.DirectionalLight(0xffffff, 1);
+        light.position.set(50, 50, 50);
+        scene.add(light);
+        const ambientLight = new THREE.AmbientLight(0x404040); 
+        scene.add(ambientLight);
+
+        // Set camera position
+        camera.position.set(0, 50, 100);
+        camera.lookAt(terrain.position);
+
+        // Render loop
+        function animate() {
+            requestAnimationFrame(animate);
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Adjust on window resize
+        window.addEventListener('resize', () => {
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+        });
+    </script>
 </body>
 </html>
