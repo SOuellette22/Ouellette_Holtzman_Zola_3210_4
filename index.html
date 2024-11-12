@@ -96,10 +96,25 @@
 
       // Update camera height to match terrain
       function updateCameraPosition() {
-        if (isMovingForward) camera.position.z -= speed;
-        if (isMovingBackward) camera.position.z += speed;
-        if (isMovingLeft) camera.position.x += speed;
-        if (isMovingRight) camera.position.x -= speed;
+        if (isMovingForward) { 
+          camera.position.z -= speed 
+          offsetY += 0.25
+        };
+
+        if (isMovingBackward) {
+          camera.position.z += speed
+          offsetY -= 0.25
+        };
+
+        if (isMovingLeft) { 
+          camera.position.x += speed
+          offsetX -= 0.25
+        };
+
+        if (isMovingRight) { 
+          camera.position.x -= speed;
+          offsetX += 0.25
+        }
 
         // Update the camera height based on terrain height
         const terrainHeight = getTerrainHeight(
@@ -109,18 +124,12 @@
         camera.position.y = terrainHeight + 5;
       }
 
-      // Update terrain and camera position for infinite effect
       function updateOffsets() {
-        // If the camera has moved far enough in any direction, update the terrain offset
-        if (Math.abs(camera.position.x) > movementThreshold) {
-          offsetX += (camera.position.x > 0 ? 1 : -1) * movementThreshold;
-          camera.position.x = camera.position.x > 0 ? -movementThreshold : movementThreshold;
-        }
-        if (Math.abs(camera.position.z) > movementThreshold) {
-          offsetY += (camera.position.z > 0 ? 1 : -1) * movementThreshold;
-          camera.position.z = camera.position.z > 0 ? -movementThreshold : movementThreshold;
-        }
+        // Continuously update offsets based on camera position to make it seamless
+        offsetX = camera.position.x / noiseScale;
+        offsetY = camera.position.z / noiseScale;
       }
+      
 
 
       // Render loop
@@ -128,7 +137,6 @@
         requestAnimationFrame(animate);
 
         updateTerrain();
-        updateOffsets();
         updateCameraPosition();
 
         renderer.render(scene, camera);
