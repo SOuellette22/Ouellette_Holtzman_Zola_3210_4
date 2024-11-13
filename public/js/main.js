@@ -3,63 +3,124 @@ import { OrbitControls } from 'https://unpkg.com/three@0.141.0/examples/jsm/cont
 import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
 import Sun from './Sun.js';
 import Moon from './Moon.js';
+import { GrammerEngine } from "./GrammerEngine.js"
 
 const block = 1;
 
-var scene = new THREE.Scene();
+//example of grammer engine remove later
+let engine = new GrammerEngine();
 
-var camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, .1, 3000 );
-camera.position.z = 100;  
-camera.position.set(0, 150, 300);
-camera.lookAt(scene.position);
-scene.add( camera );
+engine.addRule("1", "11");
+engine.addRule("0", "1[0]0")
+//engine.addRule("0", "1[0]0", 0.5);
 
-var renderer = new THREE.WebGLRenderer({canvas: myCanvas, antialias: true});
-renderer.setClearColor(0x000000);
-renderer.setPixelRatio(window.devicePixelRatio);
+console.log(engine.generate("0", 5));
+
+// Set up the scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+const renderer = new THREE.WebGLRenderer();
+
 renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
 
-var controls = new OrbitControls( camera, renderer.domElement );
-controls.update();
+// Terrain parameters
+const gridSize = 200;
+const terrainGeometry = new THREE.PlaneGeometry(
+  gridSize,
+  gridSize,
+  gridSize,
+  gridSize
+);
 
-// Geometry TEMP
-var geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
-var material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-var terrain = new THREE.Mesh(geometry, material);
-terrain.rotation.x = -0.5 * Math.PI;
-scene.add(terrain);
+// Set random seed for Perlin noise
+const randomSeed = Math.random();
+noise.seed(randomSeed);
 
-// Apply Perlin noise to the terrain
-var noise = new ImprovedNoise();
-var vertices = terrain.geometry.attributes.position.array;
-var size = 500, segments = 50, halfSize = size / 2, maxHeight = 50;
+// Perlin noise parameters
+const noiseScale = 10;
+const heightMultiplier = 5;
+let offsetX = 0;
+let offsetY = 0;
+const movementThreshold = 100;
 
-// Generates the vertices and added the perlin noise to the y value
-for (var i = 0; i <= segments; i++) {
-    for (var j = 0; j <= segments; j++) {
-        var x = i / segments * size - halfSize;
-        var z = j / segments * size - halfSize;
-        var y = noise.noise(x / 100, z / 100, 0) * maxHeight;
-        vertices[(i * (segments + 1) + j) * 3 + 2] = y;
-    }
+// Update terrain based on Perlin noise
+function updateTerrain() {
+  for (let i = 0; i < terrainGeometry.attributes.position.count; i++) {
+    const x = (terrainGeometry.attributes.position.getX(i) / noiseScale) + offsetX;
+    const y = (terrainGeometry.attributes.position.getY(i) / noiseScale) + offsetY;
+    const height = noise.perlin2(x, y) * heightMultiplier;
+    terrainGeometry.attributes.position.setZ(i, height);
+  }
+  terrainGeometry.attributes.position.needsUpdate = true;
+  terrainGeometry.computeVertexNormals();
 }
 
-terrain.geometry.attributes.position.needsUpdate = true;
-terrain.geometry.computeVertexNormals();
-
-// Load texture
-var textureLoader = new THREE.TextureLoader();
-var terrainTexture = textureLoader.load('./textures/coast_sand_rocks_02_diff_4k.jpg');
+// Load terrain texture
+const textureLoader = new THREE.TextureLoader();
+const terrainTexture = textureLoader.load("moss.webp");
 terrainTexture.wrapS = terrainTexture.wrapT = THREE.RepeatWrapping;
-terrainTexture.repeat.set(5, 5);
+terrainTexture.repeat.set(20, 20);
 
-// Update material to use the texture
-material = new THREE.MeshPhongMaterial({ map: terrainTexture });
-terrain.material = material;
+const terrainMaterial = new THREE.MeshStandardMaterial({
+  map: terrainTexture,
+  flatShading: true,
+});
 
-// Add lighting
-var ambientLight = new THREE.AmbientLight(0x404040,0.2); // soft white light
+// Create terrain mesh
+const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
+terrain.rotation.x = -Math.PI / 2;
+scene.add(terrain);
+
+const ambientLight = new THREE.AmbientLight(0x404040, 1);
 scene.add(ambientLight);
+
+// Camera settings and movement
+const speed = 0.5; // Walking speed
+let isMovingForward = false;
+let isMovingBackward = false;
+let isMovingLeft = false;
+let isMovingRight = false;
+camera.position.set(0, 10, 30);
+camera.lookAt(new THREE.Vector3(0, 0, 0));
+
+// Get terrain height at given camera position
+function getTerrainHeight(x, z) {
+  const noiseX = x / noiseScale;
+  const noiseZ = z / noiseScale;
+  return noise.perlin2(noiseX, noiseZ) * heightMultiplier;
+}
+
+// Update camera height to match terrain height
+function updateCameraPosition() {
+  if (isMovingForward) camera.position.z -= speed;
+  if (isMovingBackward) camera.position.z += speed;
+  if (isMovingLeft) camera.position.x -= speed;
+  if (isMovingRight) camera.position.x += speed;
+
+  // Update camera's y-position based on terrain height
+  const terrainHeight = getTerrainHeight(camera.position.x, camera.position.z);
+  camera.position.y = terrainHeight + 5; // Adjusted to keep camera above the terrain
+}
+
+// Update terrain offsets for infinite scrolling effect
+function updateOffsets() {
+  // Adjust the offset when the camera moves beyond the threshold
+  if (Math.abs(camera.position.x) > movementThreshold) {
+    offsetX += (camera.position.x > 0 ? 1 : -1) * movementThreshold;
+    camera.position.x = camera.position.x > 0 ? -movementThreshold : movementThreshold;
+  }
+
+  if (Math.abs(camera.position.z) > movementThreshold) {
+    offsetY += (camera.position.z > 0 ? 1 : -1) * movementThreshold;
+    camera.position.z = camera.position.z > 0 ? -movementThreshold : movementThreshold;
+  }
+}
 
 var sun = new Sun(block);
 var moon = new Moon(block);
@@ -73,10 +134,11 @@ scene.add(moon);
 scene.add(moon.helper);
 scene.add(moon.mesh);
 
+// Render loop
 function animate() {
-    var d = clock.getDelta();
+    requestAnimationFrame(animate);
 
-    controls.update();
+    var d = clock.getDelta();
 
     sun.update(d);
     sun.helper.update();
@@ -84,10 +146,35 @@ function animate() {
     moon.update(d);
     moon.helper.update();
 
-    requestAnimationFrame( animate );
-    renderer.render( scene, camera );
+    updateTerrain();
+    updateOffsets();
+    updateCameraPosition();
+
+    renderer.render(scene, camera);
 }
+
 animate();
+
+// Keydown and keyup events for camera movement
+window.addEventListener("keydown", (event) => {
+    if (event.key === "w") isMovingForward = true;
+    if (event.key === "s") isMovingBackward = true;
+    if (event.key === "a") isMovingLeft = true;
+    if (event.key === "d") isMovingRight = true;
+});
+window.addEventListener("keyup", (event) => {
+    if (event.key === "w") isMovingForward = false;
+    if (event.key === "s") isMovingBackward = false;
+    if (event.key === "a") isMovingLeft = false;
+    if (event.key === "d") isMovingRight = false;
+});
+
+// Resize handling
+window.addEventListener("resize", () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+});
 
 function keyHandler(e) {
     switch (e.key) {
