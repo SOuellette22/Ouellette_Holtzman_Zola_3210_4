@@ -59,15 +59,15 @@ controls.update();
 // terrain.material = material;
 
 var matLoader = new MaterialLoader();
-const noise = new ImprovedNoise();
+noise.seed(Math.random());
 
 var world = new THREE.Group();
 scene.add(world);
 
-var size = 16, maxHeight = 5;
+var size = 50, maxHeight = 5;
 for (var i = 0; i < size; i++) {
     for (var j = 0; j < size; j++) {
-        var y = noise.noise(i / 10, j / 10, 0) * maxHeight + 25;
+        var y = noise.perlin2(i / 20, j / 20) * maxHeight + 8;
         // console.log(y);
 
         for (var k = 0; k < y; k++) {
@@ -79,31 +79,31 @@ for (var i = 0; i < size; i++) {
 }
 
 // Add lighting
-var ambientLight = new THREE.AmbientLight(0xffffff,1); // soft white light
+var ambientLight = new THREE.AmbientLight(0xffffff,0.2); // soft white light
 scene.add(ambientLight);
 
-// var sun = new Sun(blockSize);
-// var moon = new Moon(blockSize);
+var sun = new Sun(blockSize);
+var moon = new Moon(blockSize);
 
 var clock = new THREE.Clock();
 
-// scene.add(sun);
-// scene.add(sun.helper);
-// scene.add(sun.mesh);
-// scene.add(moon);
-// scene.add(moon.helper);
-// scene.add(moon.mesh);
+scene.add(sun);
+scene.add(sun.helper);
+scene.add(sun.mesh);
+scene.add(moon);
+scene.add(moon.helper);
+scene.add(moon.mesh);
 
 function animate() {
     var d = clock.getDelta();
 
     controls.update();
 
-    // sun.update(d);
-    // sun.helper.update();
+    sun.update(d);
+    sun.helper.update();
 
-    // moon.update(d);
-    // moon.helper.update();
+    moon.update(d);
+    moon.helper.update();
 
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
@@ -126,6 +126,10 @@ function keyHandler(e) {
                 sun.speed /= 2;
                 moon.speed /= 2;
             }
+        break;
+        case 'h': // h will toggle the visibility of the sun and moon helpers
+            sun.helper.visible = !sun.helper.visible;
+            moon.helper.visible = !moon.helper.visible;
         break;
     }
 }
