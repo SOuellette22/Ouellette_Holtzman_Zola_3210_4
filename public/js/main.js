@@ -3,14 +3,15 @@ import { OrbitControls } from 'https://unpkg.com/three@0.141.0/examples/jsm/cont
 import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
 import Sun from './Sun.js';
 import Moon from './Moon.js';
+import Block from './Block.js';
+import MaterialLoader from './MaterialLoader.js';
 
-const block = 1;
+const blockSize = 1;
 
 var scene = new THREE.Scene();
 
-var camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, .1, 3000 );
-camera.position.z = 100;  
-camera.position.set(0, 150, 300);
+var camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, .1, 3000 ); 
+camera.position.set(0, 75, 75);
 camera.lookAt(scene.position);
 scene.add( camera );
 
@@ -23,66 +24,86 @@ var controls = new OrbitControls( camera, renderer.domElement );
 controls.update();
 
 // Geometry TEMP
-var geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
-var material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
-var terrain = new THREE.Mesh(geometry, material);
-terrain.rotation.x = -0.5 * Math.PI;
-scene.add(terrain);
+// var geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
+// var material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+// var terrain = new THREE.Mesh(geometry, material);
+// terrain.rotation.x = -0.5 * Math.PI;
+// scene.add(terrain);
 
-// Apply Perlin noise to the terrain
-var noise = new ImprovedNoise();
-var vertices = terrain.geometry.attributes.position.array;
-var size = 500, segments = 50, halfSize = size / 2, maxHeight = 50;
+// // Apply Perlin noise to the terrain
+// var noise = new ImprovedNoise();
+// var vertices = terrain.geometry.attributes.position.array;
+// var size = 500, segments = 50, halfSize = size / 2, maxHeight = 50;
 
-// Generates the vertices and added the perlin noise to the y value
-for (var i = 0; i <= segments; i++) {
-    for (var j = 0; j <= segments; j++) {
-        var x = i / segments * size - halfSize;
-        var z = j / segments * size - halfSize;
-        var y = noise.noise(x / 100, z / 100, 0) * maxHeight;
-        vertices[(i * (segments + 1) + j) * 3 + 2] = y;
+// // Generates the vertices and added the perlin noise to the y value
+// for (var i = 0; i <= segments; i++) {
+//     for (var j = 0; j <= segments; j++) {
+//         var x = i / segments * size - halfSize;
+//         var z = j / segments * size - halfSize;
+//         var y = noise.noise(x / 100, z / 100, 0) * maxHeight;
+//         vertices[(i * (segments + 1) + j) * 3 + 2] = y;
+//     }
+// }
+
+// terrain.geometry.attributes.position.needsUpdate = true;
+// terrain.geometry.computeVertexNormals();
+
+// // Load texture
+// var textureLoader = new THREE.TextureLoader();
+// var terrainTexture = textureLoader.load('./textures/coast_sand_rocks_02_diff_4k.jpg');
+// terrainTexture.wrapS = terrainTexture.wrapT = THREE.RepeatWrapping;
+// terrainTexture.repeat.set(5, 5);
+
+// // Update material to use the texture
+// material = new THREE.MeshPhongMaterial({ map: terrainTexture });
+// terrain.material = material;
+
+var matLoader = new MaterialLoader();
+const noise = new ImprovedNoise();
+
+var world = new THREE.Group();
+scene.add(world);
+
+var size = 16, maxHeight = 5;
+for (var i = 0; i < size; i++) {
+    for (var j = 0; j < size; j++) {
+        var y = noise.noise(i / 10, j / 10, 0) * maxHeight + 25;
+        // console.log(y);
+
+        for (var k = 0; k < y; k++) {
+            var block = new Block(k, y, matLoader);
+            block.position.set(i - (size/2), k, j- (size/2));
+            world.add(block);
+        }
     }
 }
 
-terrain.geometry.attributes.position.needsUpdate = true;
-terrain.geometry.computeVertexNormals();
-
-// Load texture
-var textureLoader = new THREE.TextureLoader();
-var terrainTexture = textureLoader.load('./textures/coast_sand_rocks_02_diff_4k.jpg');
-terrainTexture.wrapS = terrainTexture.wrapT = THREE.RepeatWrapping;
-terrainTexture.repeat.set(5, 5);
-
-// Update material to use the texture
-material = new THREE.MeshPhongMaterial({ map: terrainTexture });
-terrain.material = material;
-
 // Add lighting
-var ambientLight = new THREE.AmbientLight(0x404040,0.2); // soft white light
+var ambientLight = new THREE.AmbientLight(0xffffff,1); // soft white light
 scene.add(ambientLight);
 
-var sun = new Sun(block);
-var moon = new Moon(block);
+// var sun = new Sun(blockSize);
+// var moon = new Moon(blockSize);
 
 var clock = new THREE.Clock();
 
-scene.add(sun);
-scene.add(sun.helper);
-scene.add(sun.mesh);
-scene.add(moon);
-scene.add(moon.helper);
-scene.add(moon.mesh);
+// scene.add(sun);
+// scene.add(sun.helper);
+// scene.add(sun.mesh);
+// scene.add(moon);
+// scene.add(moon.helper);
+// scene.add(moon.mesh);
 
 function animate() {
     var d = clock.getDelta();
 
     controls.update();
 
-    sun.update(d);
-    sun.helper.update();
+    // sun.update(d);
+    // sun.helper.update();
 
-    moon.update(d);
-    moon.helper.update();
+    // moon.update(d);
+    // moon.helper.update();
 
     requestAnimationFrame( animate );
     renderer.render( scene, camera );
