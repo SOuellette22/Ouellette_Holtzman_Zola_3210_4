@@ -117,13 +117,13 @@
           camera.position.z = camera.position.z > 0 ? -movementThreshold : movementThreshold;
         }
       }
+      
 
       // Render loop
       function animate() {
         requestAnimationFrame(animate);
 
         updateTerrain();
-        updateOffsets();
         updateCameraPosition();
 
         renderer.render(scene, camera);
