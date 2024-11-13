@@ -3,8 +3,15 @@ import { OrbitControls } from 'https://unpkg.com/three@0.141.0/examples/jsm/cont
 import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
 import Sun from './Sun.js';
 import Moon from './Moon.js';
+import { GrammerEngine } from "./GrammerEngine.js"
 
 const block = 1;
+
+let engine = new GrammerEngine();
+engine.addRule("A", "AB");
+engine.addRule("B", "A");
+
+console.log(engine.generate("A", 4));
 
 var scene = new THREE.Scene();
 
