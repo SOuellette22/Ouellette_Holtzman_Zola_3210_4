@@ -3,8 +3,18 @@ import { OrbitControls } from 'https://unpkg.com/three@0.141.0/examples/jsm/cont
 import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
 import Sun from './Sun.js';
 import Moon from './Moon.js';
+import { GrammerEngine } from "./GrammerEngine.js"
 
 const block = 1;
+
+//example of grammer engine remove later
+let engine = new GrammerEngine();
+
+engine.addRule("1", "11");
+engine.addRule("0", "1[0]0")
+//engine.addRule("0", "1[0]0", 0.5);
+
+console.log(engine.generate("0", 5));
 
 // Set up the scene, camera, and renderer
 const scene = new THREE.Scene();
@@ -15,6 +25,7 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 const renderer = new THREE.WebGLRenderer();
+
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
