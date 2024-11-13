@@ -7,11 +7,14 @@ import { GrammerEngine } from "./GrammerEngine.js"
 
 const block = 1;
 
+//example of grammer engine remove later
 let engine = new GrammerEngine();
-engine.addRule("A", "AB");
-engine.addRule("B", "A");
 
-console.log(engine.generate("A", 4));
+engine.addRule("1", "11");
+engine.addRule("0", "1[0]0")
+//engine.addRule("0", "1[0]0", 0.5);
+
+console.log(engine.generate("0", 5));
 
 var scene = new THREE.Scene();
 
