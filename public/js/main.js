@@ -79,9 +79,13 @@ var matLoader = new MaterialLoader();
 //     }
 // }
 
-var terrain = new Terrain(blockSize, 100, 5, matLoader);
+// Blocksize is constant
+// size is the size of the terrain
+// heightChange is the amount of change in height
+// height is the base height
+// matLoader is the material loader
+var terrain = new Terrain(blockSize, 100, 5, 10, matLoader);
 scene.add(terrain);
-console.log(terrain.yMatrix);
 
 // Add lighting
 var ambientLight = new THREE.AmbientLight(0xffffff,0.2); // soft white light
