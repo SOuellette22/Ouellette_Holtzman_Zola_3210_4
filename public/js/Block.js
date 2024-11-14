@@ -6,8 +6,8 @@ export default class Block extends THREE.Mesh {
         this.loader = loader;
         var geometry = new THREE.BoxGeometry(1, 1, 1);
         var material = this.getMaterial(y, maxY);
-        this.geometry = geometry 
         this.material = material;
+        this.geometry = geometry;
     }
 
     getMaterial(y, maxY) {

@@ -5,6 +5,7 @@ import Sun from './Sun.js';
 import Moon from './Moon.js';
 import Block from './Block.js';
 import MaterialLoader from './MaterialLoader.js';
+import Terrain from './Terrain.js';
 
 const blockSize = 1;
 
@@ -59,24 +60,28 @@ controls.update();
 // terrain.material = material;
 
 var matLoader = new MaterialLoader();
-noise.seed(Math.random());
+// noise.seed(Math.random());
 
-var world = new THREE.Group();
-scene.add(world);
+// var world = new THREE.Group();
+// scene.add(world);
 
-var size = 50, maxHeight = 5;
-for (var i = 0; i < size; i++) {
-    for (var j = 0; j < size; j++) {
-        var y = noise.perlin2(i / 20, j / 20) * maxHeight + 8;
-        // console.log(y);
+// var size = 50, maxHeight = 5;
+// for (var i = 0; i < size; i++) {
+//     for (var j = 0; j < size; j++) {
+//         var y = noise.perlin2(i / 20, j / 20) * maxHeight + 8;
+//         // console.log(y);
 
-        for (var k = 0; k < y; k++) {
-            var block = new Block(k, y, matLoader);
-            block.position.set(i - (size/2), k, j- (size/2));
-            world.add(block);
-        }
-    }
-}
+//         for (var k = 0; k < y; k++) {
+//             var block = new Block(k, y, matLoader);
+//             block.position.set(i - (size/2), k, j- (size/2));
+//             world.add(block);
+//         }
+//     }
+// }
+
+var terrain = new Terrain(blockSize, 200, 5, matLoader);
+scene.add(terrain);
+console.log(terrain.yMatrix);
 
 // Add lighting
 var ambientLight = new THREE.AmbientLight(0xffffff,0.2); // soft white light

@@ -3,6 +3,10 @@ import * as THREE from 'three';
 export default class MaterialLoader {
     constructor() {
         this.loader = new THREE.TextureLoader();
+        this.load();
+    }
+
+    async load() {
         this.dirt = new THREE.MeshPhongMaterial({ map: this.loader.load('./public/textures/Dirt_Block.png') });
         this.grass = [
             new THREE.MeshPhongMaterial({ map: this.loader.load('./public/textures/Grass_Block_Side.png') }),
