@@ -36,7 +36,7 @@ export default class Terrain extends THREE.Group {
                         i == 0 || i == this.size - 1 ||
                         j == 0 || j == this.size - 1) 
                     {
-                        var block = new Block(k, this.yMatrix[i][j], this.matLoader, true);
+                        var block = new Block(k, this.yMatrix[i][j], this.matLoader);
                         block.position.set(i - (this.size/2), k - (this.maxHeight/2), j- (this.size/2));
                         this.add(block);
                     }

@@ -79,7 +79,7 @@ var matLoader = new MaterialLoader();
 //     }
 // }
 
-var terrain = new Terrain(blockSize, 200, 5, matLoader);
+var terrain = new Terrain(blockSize, 100, 5, matLoader);
 scene.add(terrain);
 console.log(terrain.yMatrix);
 
