@@ -1,6 +1,14 @@
 import * as THREE from 'three';
+import MaterialLoader from './MaterialLoader';
 
 export default class Block extends THREE.Mesh {
+    /**
+     * This class is the block object for the terrain
+     * 
+     * @param {Number} y this it the y value of the block
+     * @param {Number} maxY this is the max y value of the terrain
+     * @param {MaterialLoader} loader this is the object that preloads the materials for the blocks
+     */
     constructor(y, maxY, loader) {
         super();
         this.loader = loader;
@@ -10,6 +18,12 @@ export default class Block extends THREE.Mesh {
         this.geometry = geometry;
     }
 
+    /**
+     * This function will return the material for the block based on the y value
+     * 
+     * @param {Number} y this is the y value of the block
+     * @param {Number} maxY this is the max y value of the terrain
+     */
     getMaterial(y, maxY) {
         if (y == 0) {
             return this.loader.getBedrock();

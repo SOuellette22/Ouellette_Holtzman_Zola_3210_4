@@ -79,12 +79,8 @@ var matLoader = new MaterialLoader();
 //     }
 // }
 
-// Blocksize is constant
-// size is the size of the terrain
-// heightChange is the amount of change in height
-// height is the base height
-// matLoader is the material loader
-var terrain = new Terrain(blockSize, 100, 5, 10, matLoader);
+// Builds the terrian
+var terrain = new Terrain(blockSize, 10, 5, 10, matLoader);
 scene.add(terrain);
 
 // Add lighting

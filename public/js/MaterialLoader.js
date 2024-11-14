@@ -1,11 +1,17 @@
 import * as THREE from 'three';
 
 export default class MaterialLoader {
+    /**
+     * This class is used to preload the materials for the blocks
+     */
     constructor() {
         this.loader = new THREE.TextureLoader();
         this.load();
     }
 
+    /**
+     * This function will load the materials for the blocks
+     */
     async load() {
         this.dirt = new THREE.MeshPhongMaterial({ map: this.loader.load('./public/textures/Dirt_Block.png') });
         this.grass = [
@@ -24,34 +30,66 @@ export default class MaterialLoader {
         this.coal = new THREE.MeshPhongMaterial({ map: this.loader.load('./public/textures/Coal_Ore_Block.png') });
     }
 
+    /**
+     * 
+     * @returns {THREE.MeshPhongMaterial} returns the dirt material
+     */
     getDirt() {
         return this.dirt;
     }
 
+    /**
+     * 
+     * @returns {THREE.MeshPhongMaterial} returns the grass material
+     */
     getGrass() {
         return this.grass;
     }
 
+    /**
+     * 
+     * @returns {THREE.MeshPhongMaterial} returns the stone material
+     */
     getStone() {
         return this.stone;
     }
 
+    /**
+     * 
+     * @returns {THREE.MeshPhongMaterial} returns the bedrock material
+     */
     getBedrock() {
         return this.bedrock;
     }
 
+    /**
+     * 
+     * @returns {THREE.MeshPhongMaterial} returns the diamond material
+     */
     getDiamond() {
         return this.diamond;
     }
 
+    /**
+     * 
+     * @returns {THREE.MeshPhongMaterial} returns the iron material
+     */
     getIron() {
         return this.iron;
     }
 
+    /**
+     * 
+     * @returns {THREE.MeshPhongMaterial} returns the gold material
+     */
     getGold() {
         return this.gold;
     }
 
+    /**
+     * 
+     * @returns {THREE.MeshPhongMaterial} returns the coal material
+     */
     getCoal() {
         return this.coal;
     }
