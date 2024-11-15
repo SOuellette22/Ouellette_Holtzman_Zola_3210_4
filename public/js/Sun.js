@@ -2,7 +2,7 @@ import * as THREE from 'three';
 
 export default class Sun extends THREE.DirectionalLight{
     constructor(block) {
-        super(0xffffff, 0.5);
+        super(0xffffff, 1);
 
         this.distance = 500 * block;
 
@@ -91,13 +91,13 @@ export default class Sun extends THREE.DirectionalLight{
         if (x <= this.distance && x >= Math.cos(Math.PI/18) * this.distance) {
             var cp = this.distance;
             var np = Math.cos(Math.PI/18) * this.distance;
-            this.intensity = this.findIntensity(cp, np, 0, 0.5, x);
+            this.intensity = this.findIntensity(cp, np, 0, 1, x);
         }
 
         if (x <= Math.cos(Math.PI*17/18) * this.distance && x >= -this.distance) {
             var cp = Math.cos(Math.PI*17/18) * this.distance;
             var np = -this.distance;
-            this.intensity = this.findIntensity(cp, np, 0.5, 0, x);
+            this.intensity = this.findIntensity(cp, np, 1, 0, x);
         }
 
         if (this.position.y < 0) {
