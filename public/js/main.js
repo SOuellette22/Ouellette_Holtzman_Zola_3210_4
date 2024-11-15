@@ -45,8 +45,8 @@ let offsetX = 0;
 let offsetY = 0;
 const movementThreshold = 100;
 
-let tree = new Tree(2);
-tree.fractalTreeGenerate();
+let tree = new Tree(4);
+tree.fractalTreeGenerate(5);
 scene.add(tree.tree_group)
 
 let tree2 = new Tree(4);
@@ -54,6 +54,7 @@ tree2.barnsleyFern();
 tree2.tree_group.translateZ(15);
 tree2.tree_group.translateX(15);
 scene.add(tree2.tree_group);
+
 
 // Update terrain based on Perlin noise
 function updateTerrain() {
@@ -187,6 +188,7 @@ function keyHandler(e) {
     switch (e.key) {
         case 'm': // Q toggles shadows on and off
             sun.castShadow = !sun.castShadow;
+            console.log("sun shadow cast: ", sun.castShadow)
         break;
         case 'p': // p will speed up the speed of the day night cycle up till 4 times speed
             if (sun.speed < Math.PI / 30) {
