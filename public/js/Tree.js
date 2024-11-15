@@ -10,10 +10,10 @@ class Tree {
         engine.addRule("1", "11");
         engine.addRule("0", "1[0]0");
 
-        this.tree_string = engine.generate("0", 2);
+        this.tree_string = engine.generate("0", 5);
         console.log(this.tree_string)
 
-        this.branchSegmentLength = 5;
+        this.branchSegmentLength = 3;
 
         this.stack = [];
         
@@ -52,30 +52,33 @@ class Tree {
                     break;
 
             }
-            y_offset += 3;
+            y_offset += 0.5;
         }
     }
 
     _drawBranch(x, y, angle) {
-        let geom = new THREE.CylinderGeometry( 1, 1, this.branchSegmentLength, 32 );
+        let geom = new THREE.CylinderGeometry( 0.5, 0.5, this.branchSegmentLength, 32 );
         let branchMat = new THREE.MeshBasicMaterial({color: 0x8c3b0f  })
 
         let new_branch = new THREE.Mesh(geom,branchMat);
-        new_branch.translateY(y);
-        new_branch.translateX(x)
-        //new_branch.rotateZ(angle);
+        new_branch.rotateZ(angle);
+
+        new_branch.position.set(x,y,0);
+        //new_branch.translateY(y);
+        //new_branch.translateX(x)
         this.tree_group.add(new_branch);
     }
     
     _drawLeaf(x, y, angle) {
-        let geom = new THREE.CylinderGeometry( 1, 1, this.branchSegmentLength, 32 );
+        let geom = new THREE.CylinderGeometry( 0.5, 0.5, this.branchSegmentLength, 32 );
         let leafMat = new THREE.MeshBasicMaterial({color: 0x85f53b })
 
         let new_branch = new THREE.Mesh(geom,leafMat);
+        new_branch.rotateZ(angle);
+        new_branch.position.set(x,y,0);
 
-        new_branch.translateY(y);
-        new_branch.translateX(x)
-        //new_branch.rotateZ(angle);
+        //new_branch.translateY(y);
+        //new_branch.translateX(x)
         this.tree_group.add(new_branch);
     }
 }
