@@ -1,11 +1,23 @@
 import * as THREE from 'three';
 import { GrammerEngine } from "./GrammerEngine.js"
 
+/**
+ * Tree creates a tree 
+ * 
+ * @param branchLength - length of each branch in the tree 
+ * 
+ * @example
+ * let tree = new Tree(4);
+ * //make fractal tree
+ * tree.fractalTreeGenerate(5);
+ * //to make a bern tree instead
+ * tree.barnsleyFern(5);
+ * //add to scene
+ * scene.add(tree.tree_group)
+ */
 class Tree {
     constructor(branchLength) {
         //example of grammer engine remove later
-        
-
         this.branchLength = branchLength;
 
         this.stack = [];
@@ -27,7 +39,12 @@ class Tree {
 
     }
 
+    /**
+     * Generates a fractal tree using a classic algorithm 
+     * @param {Int} iterations Number of iterations for L-Grammer system
+     */
     fractalTreeGenerate(iterations) {
+        //create grammer string for tree
         let engine = new GrammerEngine();
 
         engine.addRule("1", "11");
@@ -36,42 +53,50 @@ class Tree {
         let tree_string = engine.generate("0", iterations);
         console.log(tree_string)
 
+        //create offsets 
         let offsets = new Element(0,this.branchLength, 0)
-
+        //loop through our grammer string 
         for (let curr_char of tree_string ) {
             console.log("y_offset", offsets.x, "angle: ", offsets.y)
             switch(curr_char) {
                 case "1": 
+                    //draw branch and move up 
                     this._drawBranch(offsets);
                     offsets.y += this.branchLength * 0.15;
 
                     break;
                 case "0": 
+                    //draw branch and move up
                     this._drawLeaf(offsets);
                     offsets.y += this.branchLength * 0.15;
                     break;
                 case "[":
+                    //push state to stack
                     this.stack.push(new Element(offsets.x, offsets.y, offsets.angle));
                     offsets.angle += 45;
                     offsets.x += this.branchLength * 0.5;
                     break;
                 case "]":
+                    //pop state from stack 
                     offsets = this.stack.pop();
 
                     offsets.angle -= 45;
                     offsets.x -= this.branchLength * 0.5 ;
                     break;
-
             }
         }
 
+        //clone group to create a copy to rotate so it is more 3D
         let treeGroup2 = this.tree_group.clone();
 
         treeGroup2.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
         this.tree_group.add(treeGroup2)
     }
 
-
+    /**
+     * Creates stochastic Barnsley Fern
+     * @param {Int} iterations Number of iterations for L-Grammer system
+     */
     barnsleyFern(iterations) {
         let engine = new GrammerEngine();
 

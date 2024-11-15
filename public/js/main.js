@@ -49,7 +49,7 @@ let tree = new Tree(4);
 tree.fractalTreeGenerate(5);
 scene.add(tree.tree_group)
 
-let tree2 = new Tree(4);
+let tree2 = new Tree(3);
 tree2.barnsleyFern(5);
 tree2.tree_group.translateZ(15);
 tree2.tree_group.translateX(15);
