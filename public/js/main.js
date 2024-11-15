@@ -3,12 +3,20 @@ import { OrbitControls } from 'https://unpkg.com/three@0.141.0/examples/jsm/cont
 import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
 import Sun from './Sun.js';
 import Moon from './Moon.js';
+import Block from './Block.js';
+import MaterialLoader from './MaterialLoader.js';
+import Terrain from './Terrain.js';
 import { GrammerEngine } from "./GrammerEngine.js"
 
-const block = 1;
+const blockSize = 1;
 
 //example of grammer engine remove later
 let engine = new GrammerEngine();
+
+var camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, .1, 3000 ); 
+camera.position.set(0, 75, 75);
+camera.lookAt(scene.position);
+scene.add( camera );
 
 engine.addRule("1", "11");
 engine.addRule("0", "1[0]0")
@@ -25,6 +33,7 @@ const camera = new THREE.PerspectiveCamera(
   1000
 );
 const renderer = new THREE.WebGLRenderer();
+
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -72,58 +81,73 @@ const terrainMaterial = new THREE.MeshStandardMaterial({
   flatShading: true,
 });
 
-// Create terrain mesh
-const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
-terrain.rotation.x = -Math.PI / 2;
+
+// Geometry TEMP
+// var geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
+// var material = new THREE.MeshBasicMaterial({ color: 0x00ff00, wireframe: true });
+// var terrain = new THREE.Mesh(geometry, material);
+// terrain.rotation.x = -0.5 * Math.PI;
+// scene.add(terrain);
+
+// // Apply Perlin noise to the terrain
+// var noise = new ImprovedNoise();
+// var vertices = terrain.geometry.attributes.position.array;
+// var size = 500, segments = 50, halfSize = size / 2, maxHeight = 50;
+
+// // Generates the vertices and added the perlin noise to the y value
+// for (var i = 0; i <= segments; i++) {
+//     for (var j = 0; j <= segments; j++) {
+//         var x = i / segments * size - halfSize;
+//         var z = j / segments * size - halfSize;
+//         var y = noise.noise(x / 100, z / 100, 0) * maxHeight;
+//         vertices[(i * (segments + 1) + j) * 3 + 2] = y;
+//     }
+// }
+
+// terrain.geometry.attributes.position.needsUpdate = true;
+// terrain.geometry.computeVertexNormals();
+
+// // Load texture
+// var textureLoader = new THREE.TextureLoader();
+// var terrainTexture = textureLoader.load('./textures/coast_sand_rocks_02_diff_4k.jpg');
+// terrainTexture.wrapS = terrainTexture.wrapT = THREE.RepeatWrapping;
+// terrainTexture.repeat.set(5, 5);
+
+// // Update material to use the texture
+// material = new THREE.MeshPhongMaterial({ map: terrainTexture });
+// terrain.material = material;
+
+var matLoader = new MaterialLoader();
+// noise.seed(Math.random());
+
+// var world = new THREE.Group();
+// scene.add(world);
+
+// var size = 50, maxHeight = 5;
+// for (var i = 0; i < size; i++) {
+//     for (var j = 0; j < size; j++) {
+//         var y = noise.perlin2(i / 20, j / 20) * maxHeight + 8;
+//         // console.log(y);
+
+//         for (var k = 0; k < y; k++) {
+//             var block = new Block(k, y, matLoader);
+//             block.position.set(i - (size/2), k, j- (size/2));
+//             world.add(block);
+//         }
+//     }
+// }
+
+// Builds the terrian
+var terrain = new Terrain(blockSize, 10, 5, 10, matLoader);
 scene.add(terrain);
 
-const ambientLight = new THREE.AmbientLight(0x404040, 1);
+// Add lighting
+var ambientLight = new THREE.AmbientLight(0xffffff,0.2); // soft white light
 scene.add(ambientLight);
 
-// Camera settings and movement
-const speed = 0.5; // Walking speed
-let isMovingForward = false;
-let isMovingBackward = false;
-let isMovingLeft = false;
-let isMovingRight = false;
-camera.position.set(0, 10, 30);
-camera.lookAt(new THREE.Vector3(0, 0, 0));
 
-// Get terrain height at given camera position
-function getTerrainHeight(x, z) {
-  const noiseX = x / noiseScale;
-  const noiseZ = z / noiseScale;
-  return noise.perlin2(noiseX, noiseZ) * heightMultiplier;
-}
-
-// Update camera height to match terrain height
-function updateCameraPosition() {
-  if (isMovingForward) camera.position.z -= speed;
-  if (isMovingBackward) camera.position.z += speed;
-  if (isMovingLeft) camera.position.x -= speed;
-  if (isMovingRight) camera.position.x += speed;
-
-  // Update camera's y-position based on terrain height
-  const terrainHeight = getTerrainHeight(camera.position.x, camera.position.z);
-  camera.position.y = terrainHeight + 5; // Adjusted to keep camera above the terrain
-}
-
-// Update terrain offsets for infinite scrolling effect
-function updateOffsets() {
-  // Adjust the offset when the camera moves beyond the threshold
-  if (Math.abs(camera.position.x) > movementThreshold) {
-    offsetX += (camera.position.x > 0 ? 1 : -1) * movementThreshold;
-    camera.position.x = camera.position.x > 0 ? -movementThreshold : movementThreshold;
-  }
-
-  if (Math.abs(camera.position.z) > movementThreshold) {
-    offsetY += (camera.position.z > 0 ? 1 : -1) * movementThreshold;
-    camera.position.z = camera.position.z > 0 ? -movementThreshold : movementThreshold;
-  }
-}
-
-var sun = new Sun(block);
-var moon = new Moon(block);
+var sun = new Sun(blockSize);
+var moon = new Moon(blockSize);
 
 var clock = new THREE.Clock();
 
@@ -192,6 +216,10 @@ function keyHandler(e) {
                 sun.speed /= 2;
                 moon.speed /= 2;
             }
+        break;
+        case 'h': // h will toggle the visibility of the sun and moon helpers
+            sun.helper.visible = !sun.helper.visible;
+            moon.helper.visible = !moon.helper.visible;
         break;
     }
 }

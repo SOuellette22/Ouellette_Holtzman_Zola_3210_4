@@ -21,8 +21,8 @@ export default class Moon extends THREE.DirectionalLight{
     update(d) {
         const x = this.position.x;
 
-        this.rotateAboutWorldAxis(this, new THREE.Vector3(0, 0, 1), this.speed * d);
-        this.rotateAboutWorldAxis(this.mesh, new THREE.Vector3(0, 0, 1), this.speed * d);
+        this.rotateAboutWorldAxis(this, new THREE.Vector3(0, 0, 10), this.speed * d);
+        this.rotateAboutWorldAxis(this.mesh, new THREE.Vector3(0, 0, 10), this.speed * d);
         this.mesh.lookAt(0,0,0);
         
         if (x <= this.distance && x >= Math.cos(Math.PI/18) * this.distance) {
