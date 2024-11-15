@@ -4,6 +4,7 @@ import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
 import Sun from './Sun.js';
 import Moon from './Moon.js';
 import { GrammerEngine } from "./GrammerEngine.js"
+import { Tree } from "./Tree.js"
 
 const block = 1;
 
@@ -13,6 +14,7 @@ let engine = new GrammerEngine();
 engine.addRule("1", "11");
 engine.addRule("0", "1[0]0")
 //engine.addRule("0", "1[0]0", 0.5);
+
 
 console.log(engine.generate("0", 5));
 
@@ -28,6 +30,12 @@ const renderer = new THREE.WebGLRenderer();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+
+
+//orbit controls to make tree test easier 
+var controls = new OrbitControls( camera, renderer.domElement );
+controls.update();
+
 
 // Terrain parameters
 const gridSize = 200;
@@ -48,6 +56,9 @@ const heightMultiplier = 5;
 let offsetX = 0;
 let offsetY = 0;
 const movementThreshold = 100;
+
+let tree = new Tree();
+scene.add(tree.tree_group)
 
 // Update terrain based on Perlin noise
 function updateTerrain() {
@@ -148,7 +159,7 @@ function animate() {
 
     updateTerrain();
     updateOffsets();
-    updateCameraPosition();
+    //updateCameraPosition();
 
     renderer.render(scene, camera);
 }
@@ -167,7 +178,8 @@ window.addEventListener("keyup", (event) => {
     if (event.key === "s") isMovingBackward = false;
     if (event.key === "a") isMovingLeft = false;
     if (event.key === "d") isMovingRight = false;
-});
+}); 
+
 
 // Resize handling
 window.addEventListener("resize", () => {
