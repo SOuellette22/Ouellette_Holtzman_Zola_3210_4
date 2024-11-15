@@ -16,6 +16,9 @@ export default class Block extends THREE.Mesh {
         var material = this.getMaterial(y, maxY);
         this.material = material;
         this.geometry = geometry;
+
+        this.receiveShadow = true;
+        this.isBedrock = false;
     }
 
     /**
@@ -26,11 +29,14 @@ export default class Block extends THREE.Mesh {
      */
     getMaterial(y, maxY) {
         if (y == 0) {
+            this.isBedrock = true;
             return this.loader.getBedrock();
         } else if (y > 0 && y <= 2) {
             var r = Math.round(Math.random());
             if (r == 0) {
+                this.isBedrock = true;
                 return this.loader.getBedrock();
+                
             } else {
                 return this.loader.getStone();
             }

@@ -59,8 +59,6 @@ export default class Terrain extends THREE.Group {
                         this.add(block);
                     }
 
-                    console.log("Block created at: " + i + ", " + k + ", " + j);
-
                 }
             }
         }
