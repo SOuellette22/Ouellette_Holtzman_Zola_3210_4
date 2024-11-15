@@ -1,9 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'https://unpkg.com/three@0.141.0/examples/jsm/controls/OrbitControls.js';
-import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
 import Sun from './Sun.js';
 import Moon from './Moon.js';
-import { GrammerEngine } from "./GrammerEngine.js"
 import { Tree } from "./Tree.js"
 
 const block = 1;
@@ -47,11 +45,11 @@ let offsetX = 0;
 let offsetY = 0;
 const movementThreshold = 100;
 
-let tree = new Tree();
+let tree = new Tree(2);
 tree.fractalTreeGenerate();
 scene.add(tree.tree_group)
 
-let tree2 = new Tree();
+let tree2 = new Tree(4);
 tree2.barnsleyFern();
 tree2.tree_group.translateZ(15);
 tree2.tree_group.translateX(15);
