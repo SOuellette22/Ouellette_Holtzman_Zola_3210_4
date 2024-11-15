@@ -50,7 +50,7 @@ tree.fractalTreeGenerate(5);
 scene.add(tree.tree_group)
 
 let tree2 = new Tree(4);
-tree2.barnsleyFern();
+tree2.barnsleyFern(5);
 tree2.tree_group.translateZ(15);
 tree2.tree_group.translateX(15);
 scene.add(tree2.tree_group);

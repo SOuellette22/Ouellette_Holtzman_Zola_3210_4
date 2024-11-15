@@ -14,14 +14,14 @@ class Tree {
         this.textureLoader = new THREE.TextureLoader();
 
         this.branchMat = new THREE.MeshPhongMaterial({
-            map: this.textureLoader.load("textures/Bark014_4K-PNG_Color.png"),
-            normalMap: this.textureLoader.load("textures/Bark014_4K-PNG_NormalGL.png"),
+            //map: this.textureLoader.load("textures/Bark014_4K-PNG_Color.png"),
+            //normalMap: this.textureLoader.load("textures/Bark014_4K-PNG_NormalGL.png"),
             color: 0xeb7f1a
         })
 
         this.leafMat = new THREE.MeshPhongMaterial({
-            map: this.textureLoader.load("textures/Bark014_4K-PNG_Color.png"),
-            normalMap: this.textureLoader.load("textures/Bark014_4K-PNG_NormalGL.png"),
+            //map: this.textureLoader.load("textures/Bark014_4K-PNG_Color.png"),
+            //normalMap: this.textureLoader.load("textures/Bark014_4K-PNG_NormalGL.png"),
             color: 0x36eb1a
         })
 
@@ -69,17 +69,16 @@ class Tree {
 
         treeGroup2.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
         this.tree_group.add(treeGroup2)
-
-        
     }
 
-    barnsleyFern() {
+
+    barnsleyFern(iterations) {
         let engine = new GrammerEngine();
 
-        engine.addRule("X", " F+[[X]-X]-F[-FX]+X");
-        engine.addRule("F", "FF");
+        engine.addRule("X", " F+[[X]-X]-F[-FX]+X", 0.5);
+        engine.addRule("F", "FF", 0.5);
 
-        let tree_string = engine.generate("X", 3);
+        let tree_string = engine.generate("X", iterations);
         console.log(tree_string)
 
         let offsets = new Element(0,this.branchLength, 0)
@@ -89,13 +88,16 @@ class Tree {
                 case "F":
                     this._drawBranch(offsets);
                     break;
+                case "X":
+                    this._drawLeaf(offsets);
+                    break;
                 case "-":
                     offsets.angle += 25;
-                    offsets.x -= this.branchLength * 0.4;
+                    offsets.x -= this.branchLength * 0.6;
                     break;
                 case "+":
                     offsets.angle -= 25;
-                    offsets.x += this.branchLength * 0.4;
+                    offsets.x += this.branchLength * 0.6;
                     break;
                 case "[":
                     this.stack.push(new Element(offsets.x, offsets.y, offsets.angle));
@@ -106,6 +108,10 @@ class Tree {
             }
             offsets.y += this.branchLength * 0.15;
         }
+
+        let treeGroup2 = this.tree_group.clone();
+        treeGroup2.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
+        this.tree_group.add(treeGroup2)
     }
 
     _drawBranch(offsets) {
