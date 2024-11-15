@@ -8,16 +8,6 @@ import { Tree } from "./Tree.js"
 
 const block = 1;
 
-//example of grammer engine remove later
-let engine = new GrammerEngine();
-
-engine.addRule("1", "11");
-engine.addRule("0", "1[0]0")
-//engine.addRule("0", "1[0]0", 0.5);
-
-
-console.log(engine.generate("0", 5));
-
 // Set up the scene, camera, and renderer
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -58,7 +48,14 @@ let offsetY = 0;
 const movementThreshold = 100;
 
 let tree = new Tree();
+tree.fractalTreeGenerate();
 scene.add(tree.tree_group)
+
+let tree2 = new Tree();
+tree2.barnsleyFern();
+tree2.tree_group.translateZ(15);
+tree2.tree_group.translateX(15);
+scene.add(tree2.tree_group);
 
 // Update terrain based on Perlin noise
 function updateTerrain() {
@@ -145,6 +142,7 @@ scene.add(moon);
 scene.add(moon.helper);
 scene.add(moon.mesh);
 
+updateTerrain();
 // Render loop
 function animate() {
     requestAnimationFrame(animate);
@@ -157,7 +155,6 @@ function animate() {
     moon.update(d);
     moon.helper.update();
 
-    updateTerrain();
     updateOffsets();
     //updateCameraPosition();
 

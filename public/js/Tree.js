@@ -5,80 +5,117 @@ import { element, positionLocal } from 'three/webgpu';
 class Tree {
     constructor() {
         //example of grammer engine remove later
-        let engine = new GrammerEngine();
+        
 
-        engine.addRule("1", "11");
-        engine.addRule("0", "1[0]0");
-
-        this.tree_string = engine.generate("0", 5);
-        console.log(this.tree_string)
-
-        this.branchSegmentLength = 3;
+        this.branchSegmentLength = 1;
 
         this.stack = [];
         
         this.tree_group = new THREE.Group();
 
-        this._treeGenerate();
     }
 
-    _treeGenerate() {
+    fractalTreeGenerate() {
+        let engine = new GrammerEngine();
+
+        engine.addRule("1", "11");
+        engine.addRule("0", "1[0]0");
+
+        let tree_string = engine.generate("0", 5);
+        console.log(tree_string)
+
+        let offsets = new Element(0,this.branchSegmentLength, 0)
+
+        for (let curr_char of tree_string ) {
+            console.log("y_offset", offsets.x, "angle: ", offsets.y)
+            switch(curr_char) {
+                case "1": 
+                    this._drawBranch(offsets);
+                    break;
+                case "0": 
+                    this._drawLeaf(offsets);
+                    break;
+                case "[":
+                    this.stack.push(new Element(offsets.x, offsets.y, offsets.angle));
+                    offsets.angle += 45;
+                    offsets.x += 1;
+                    break;
+                case "]":
+                    offsets = this.stack.pop();
+
+                    offsets.angle -= 45;
+                    offsets.x -= 1;
+                    break;
+
+            }
+            offsets.y += 0.25;
+        }
+    }
+
+    barnsleyFern() {
         let y_offset = this.branchSegmentLength;                    //y_offset += this.branchSegmentLength;
         let x_offset = 0;
         let angle = 0; 
 
-        for (let curr_char of this.tree_string ) {
-            console.log("y_offset", y_offset, "angle: ", angle)
+        let engine = new GrammerEngine();
+
+        engine.addRule("X", " F+[[X]-X]-F[-FX]+X");
+        engine.addRule("F", "FF");
+
+        let tree_string = engine.generate("X", 4);
+        console.log(tree_string)
+
+        let offsets = new Element(0,this.branchSegmentLength, 0)
+
+        for (let curr_char of tree_string) {
             switch(curr_char) {
-                case "1": 
-                    this._drawBranch(x_offset, y_offset, angle);
+                case "F":
+                    this._drawBranch(offsets);
                     break;
-                case "0": 
-                    this._drawLeaf(x_offset, y_offset, angle);
+                case "-":
+                    offsets.angle += 25;
+                    offsets.x -= 1.5;
+                    break;
+                case "+":
+                    offsets.angle -= 25;
+                    offsets.x += 1.5;
                     break;
                 case "[":
-                    this.stack.push(new Element(x_offset, y_offset, angle));
-                    angle += 45;
-                    x_offset += 2;
+                    this.stack.push(new Element(offsets.x, offsets.y, offsets.angle));
                     break;
                 case "]":
-                    let element = this.stack.pop();
-                    x_offset = element.x;
-                    y_offset = element.y;
-                    angle = element.angle;
-
-                    angle -= 45;
-                    x_offset -= 2;
-                    break;
-
+                    offsets = this.stack.pop();
+                
             }
-            y_offset += 0.5;
+            offsets.y += 0.25;
         }
     }
 
-    _drawBranch(x, y, angle) {
+    _drawBranch(offsets) {
         let geom = new THREE.CylinderGeometry( 0.5, 0.5, this.branchSegmentLength, 32 );
         let branchMat = new THREE.MeshBasicMaterial({color: 0x8c3b0f  })
 
         let new_branch = new THREE.Mesh(geom,branchMat);
-        new_branch.rotateZ(angle);
+        new_branch.castShadow = true;
+        new_branch.receiveShadow = true;
+        
+        new_branch.rotateZ(offsets.angle);
+        new_branch.position.set(offsets.x, offsets.y,0);
 
-        new_branch.position.set(x,y,0);
-        //new_branch.translateY(y);
-        //new_branch.translateX(x)
         this.tree_group.add(new_branch);
     }
     
-    _drawLeaf(x, y, angle) {
+    _drawLeaf(offsets) {
         let geom = new THREE.CylinderGeometry( 0.5, 0.5, this.branchSegmentLength, 32 );
         let leafMat = new THREE.MeshBasicMaterial({color: 0x85f53b })
 
         let new_branch = new THREE.Mesh(geom,leafMat);
-        new_branch.rotateZ(angle);
-        new_branch.position.set(x,y,0);
+        new_branch.castShadow = true;
+        new_branch.receiveShadow = true;
 
-        //new_branch.translateY(y);
-        //new_branch.translateX(x)
+        new_branch.rotateZ(offsets.angle);
+        new_branch.position.set(offsets.x,offsets.y,0);
+
         this.tree_group.add(new_branch);
     }
 }
