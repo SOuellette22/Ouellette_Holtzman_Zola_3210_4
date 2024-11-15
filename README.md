@@ -9,12 +9,12 @@ This project utilizes procedural generation techniques to create a dynamic and i
 # Installation Steps
 
 1. Clone the repository:
-```
-git clone <repos_link>
+```shell
+git clone https://github.com/SOuellette22/Ouellette_Holtzman_Zola_3210_4.git
 ```
 
 2. Install both vite and three into the projcets directory:
-```
+```shell
 npm install vite
 npm install three
 ```
@@ -25,7 +25,7 @@ npm install three
 # Usage
 
 1. While in project directory
-```
+```shell
 npx vite
 ```
 
@@ -36,3 +36,7 @@ npx vite
 - [Sean Ouellette](https://github.com/SOuellette22): [ouellettese04@gmail.com](ouellettese04@gmail.com)
 - [Seth Holtzman](https://github.com/SethMC26):
 - [Gaby Zola](https://github.com/gabyzola):
+
+
+# Citations 
+- Texture for terrain (https://www.lotpixel.com/texture-library/ground-textures/forest-textures)

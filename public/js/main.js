@@ -6,23 +6,81 @@ import Moon from './Moon.js';
 import Block from './Block.js';
 import MaterialLoader from './MaterialLoader.js';
 import Terrain from './Terrain.js';
+import { GrammerEngine } from "./GrammerEngine.js"
 
 const blockSize = 1;
 
-var scene = new THREE.Scene();
+//example of grammer engine remove later
+let engine = new GrammerEngine();
 
 var camera = new THREE.PerspectiveCamera( 35, window.innerWidth / window.innerHeight, .1, 3000 ); 
 camera.position.set(0, 75, 75);
 camera.lookAt(scene.position);
 scene.add( camera );
 
-var renderer = new THREE.WebGLRenderer({canvas: myCanvas, antialias: true});
-renderer.setClearColor(0x000000);
-renderer.setPixelRatio(window.devicePixelRatio);
-renderer.setSize(window.innerWidth, window.innerHeight);
+engine.addRule("1", "11");
+engine.addRule("0", "1[0]0")
+//engine.addRule("0", "1[0]0", 0.5);
 
-var controls = new OrbitControls( camera, renderer.domElement );
-controls.update();
+console.log(engine.generate("0", 5));
+
+// Set up the scene, camera, and renderer
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera(
+  75,
+  window.innerWidth / window.innerHeight,
+  0.1,
+  1000
+);
+const renderer = new THREE.WebGLRenderer();
+
+
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+// Terrain parameters
+const gridSize = 200;
+const terrainGeometry = new THREE.PlaneGeometry(
+  gridSize,
+  gridSize,
+  gridSize,
+  gridSize
+);
+
+// Set random seed for Perlin noise
+const randomSeed = Math.random();
+noise.seed(randomSeed);
+
+// Perlin noise parameters
+const noiseScale = 10;
+const heightMultiplier = 5;
+let offsetX = 0;
+let offsetY = 0;
+const movementThreshold = 100;
+
+// Update terrain based on Perlin noise
+function updateTerrain() {
+  for (let i = 0; i < terrainGeometry.attributes.position.count; i++) {
+    const x = (terrainGeometry.attributes.position.getX(i) / noiseScale) + offsetX;
+    const y = (terrainGeometry.attributes.position.getY(i) / noiseScale) + offsetY;
+    const height = noise.perlin2(x, y) * heightMultiplier;
+    terrainGeometry.attributes.position.setZ(i, height);
+  }
+  terrainGeometry.attributes.position.needsUpdate = true;
+  terrainGeometry.computeVertexNormals();
+}
+
+// Load terrain texture
+const textureLoader = new THREE.TextureLoader();
+const terrainTexture = textureLoader.load("moss.webp");
+terrainTexture.wrapS = terrainTexture.wrapT = THREE.RepeatWrapping;
+terrainTexture.repeat.set(20, 20);
+
+const terrainMaterial = new THREE.MeshStandardMaterial({
+  map: terrainTexture,
+  flatShading: true,
+});
+
 
 // Geometry TEMP
 // var geometry = new THREE.PlaneGeometry(500, 500, 50, 50);
@@ -87,6 +145,7 @@ scene.add(terrain);
 var ambientLight = new THREE.AmbientLight(0xffffff,0.2); // soft white light
 scene.add(ambientLight);
 
+
 var sun = new Sun(blockSize);
 var moon = new Moon(blockSize);
 
@@ -99,10 +158,11 @@ scene.add(moon);
 scene.add(moon.helper);
 scene.add(moon.mesh);
 
+// Render loop
 function animate() {
-    var d = clock.getDelta();
+    requestAnimationFrame(animate);
 
-    controls.update();
+    var d = clock.getDelta();
 
     sun.update(d);
     sun.helper.update();
@@ -110,10 +170,35 @@ function animate() {
     moon.update(d);
     moon.helper.update();
 
-    requestAnimationFrame( animate );
-    renderer.render( scene, camera );
+    updateTerrain();
+    updateOffsets();
+    updateCameraPosition();
+
+    renderer.render(scene, camera);
 }
+
 animate();
+
+// Keydown and keyup events for camera movement
+window.addEventListener("keydown", (event) => {
+    if (event.key === "w") isMovingForward = true;
+    if (event.key === "s") isMovingBackward = true;
+    if (event.key === "a") isMovingLeft = true;
+    if (event.key === "d") isMovingRight = true;
+});
+window.addEventListener("keyup", (event) => {
+    if (event.key === "w") isMovingForward = false;
+    if (event.key === "s") isMovingBackward = false;
+    if (event.key === "a") isMovingLeft = false;
+    if (event.key === "d") isMovingRight = false;
+});
+
+// Resize handling
+window.addEventListener("resize", () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+});
 
 function keyHandler(e) {
     switch (e.key) {
