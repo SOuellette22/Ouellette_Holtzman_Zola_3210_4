@@ -64,7 +64,37 @@ export default class Terrain extends THREE.Group {
         }
     }
 
-    update() {
-        
+    /**
+     * This function will update the terrain based on what block the player breaks
+     * 
+     * @param {Number} x this is the x position of the block
+     * @param {Number} y this is the y position of the block
+     * @param {Number} z this is the z position of the block
+     */
+    update(x,y,z) {
+        var maxY = this.yMatrix.at(x).at(z);
+        var block = new Block(y-1, maxY, this.matLoader);
+        block.position.set(x,y-1,z);
+        this.add(block);
+        this.updateAdjacentBlock(x-1,y,z);
+        this.updateAdjacentBlock(x+1,y,z);
+        this.updateAdjacentBlock(x,y,z-1);
+        this.updateAdjacentBlock(x,y,z+1);
+    }
+
+    /**
+     * This function will update the adjacent blocks to the block that was broken
+     * 
+     * @param {Number} x this is the x position of the block
+     * @param {Number} y this is the y position of the block
+     * @param {Number} z this is the z position of the block
+     */
+    updateAdjacentBlock(x,y,z) {
+        if (x >= 0 && x < this.size && z >= 0 && z < this.size) {
+            var maxY = this.yMatrix.at(x).at(z);
+            var block = new Block(y, maxY, this.matLoader);
+            block.position.set(x,y,z);
+            this.add(block);
+        }
     }
 }

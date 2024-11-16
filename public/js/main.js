@@ -30,7 +30,6 @@ const renderer = new THREE.WebGLRenderer();
 camera.position.set(0, 10, 30);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
 controls.update();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
