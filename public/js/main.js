@@ -5,6 +5,8 @@ import Moon from './Moon.js';
 import Terrain from "./Terrain.js";
 import MaterialLoader from './MaterialLoader.js';
 import {Tree } from "./Tree.js"
+import Block from './Block.js';
+import { randFloat, randFloatSpread } from 'three/src/math/MathUtils.js';
 
 const block = 1;
 
@@ -20,29 +22,34 @@ const renderer = new THREE.WebGLRenderer();
 camera.position.set(0, 10, 30);
 
 const controls = new OrbitControls(camera, renderer.domElement);
-controls.enableDamping = true;
 controls.update();
-
-let tree = new Tree(1);
-tree.fractalTreeGenerate(4);
-tree.group.translateY(-1)
-scene.add(tree.group)
-
-let tree2 = new Tree(1);
-tree2.barnsleyFern(3);
-
-tree2.group.translateX(5);
-tree2.group.translateY(5);
-tree2.group.translateZ(5);
-
-scene.add(tree2.group);
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const matLoader = new MaterialLoader();
-const terrain = new Terrain(block, 41, 5, 10, matLoader);
+const terrain = new Terrain(block, 51, 5, 10, matLoader);
+
 scene.add(terrain);
+for (let i = -20; i < 21; i += 5) {
+    for (let j = -20; j < 21; j +=  5) {
+        let tree = new Tree(block);
+        if (Math.random() < 0.5 ) {
+            tree.fractalTreeGenerate(THREE.MathUtils.randInt(3,4));
+        }
+        else {
+            tree.barnsleyFern(3)
+        }
+
+        let x = i + THREE.MathUtils.randInt(-5,5);
+        let z = j + THREE.MathUtils.randInt(-5,5);
+
+        tree.group.position.set(x, 0, z)
+
+        tree.group.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/THREE.MathUtils.randFloatSpread(2))
+        scene.add(tree.group);
+    }
+}
 
 // // Terrain parameters
 // const gridSize = 200;

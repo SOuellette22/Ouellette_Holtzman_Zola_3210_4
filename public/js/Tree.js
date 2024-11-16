@@ -57,7 +57,7 @@ class Tree {
         let offsets = new Element(0,this.branchLength, 0)
         //loop through our grammer string 
         for (let curr_char of tree_string ) {
-            console.log("y_offset", offsets.x, "angle: ", offsets.y)
+            console.debug("y_offset", offsets.x, "angle: ", offsets.y)
             switch(curr_char) {
                 case "1": 
                     //draw branch and move up 
@@ -95,6 +95,9 @@ class Tree {
         //center tree on block
         this.group.translateX(-0.5);
         this.group.translateZ(-0.5);    
+
+        this.group.castShadow = true;
+        this.group.receiveShadow = true;
     }
 
     /**
@@ -153,6 +156,9 @@ class Tree {
         //center tree on block
         this.group.translateX(-0.5);
         this.group.translateZ(-0.5); 
+
+        this.group.castShadow = true;
+        this.group.receiveShadow = true;
     }
 
     _drawBranch(offsets) {
@@ -187,16 +193,7 @@ class Tree {
         nextLeaf = new_branch.clone();
         nextLeaf.rotateX(-Math.PI/2);
         this.group.add(nextLeaf)
-    }
 
-    _rotateAboutWorldAxis(object, axis, angle) {
-        var rotationMatrix = new THREE.Matrix4() ;
-        rotationMatrix.makeRotationAxis( axis.normalize() ,angle) ;
-        var currentPos = new THREE.Vector4(object.position.x, object.position.y, object.position.z, 1) ;
-        var newPos = currentPos.applyMatrix4( rotationMatrix );
-        object.position.x = newPos.x ;
-        object.position.y = newPos.y ;
-        object.position.z = newPos.z ;
     }
 }
 
