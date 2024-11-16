@@ -36,8 +36,8 @@ export default class MaterialLoader {
         })
 
         this.leaf = this.leafMat = new THREE.MeshPhongMaterial({
-            map: this.loader.load("textures/Bark014_4K-PNG_Color.png"),
-            normalMap: this.loader.load("textures/Bark014_4K-PNG_NormalGL.png"),
+            map: this.loader.load("textures/Grass001_4K-JPG_Color.jpg"),
+            normalMap: this.loader.load("textures/Grass001_4K-JPG_NormalGL.jpg"),
             color: 0x36eb1a
         })
 

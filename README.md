@@ -40,4 +40,4 @@ npx vite
 
 # Citations 
 - Texture for terrain (https://www.lotpixel.com/texture-library/ground-textures/forest-textures)
-- Texture for Tree (ambientCG.com/a/Bark014)
+- Texture for Tree (ambientCG.com/a/Bark014) (ambientCG.com/a/Grass001)
