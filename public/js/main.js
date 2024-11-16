@@ -41,11 +41,12 @@ for (let i = -20; i < 21; i += 5) {
             tree.barnsleyFern(3)
         }
 
-        let x = i + THREE.MathUtils.randInt(-5,5);
+        let x = i + THREE.MathUtils.randInt(-4,4);
         let z = j + THREE.MathUtils.randInt(-5,5);
 
         tree.group.position.set(x, 0, z)
-
+        //console.log(Math.floor(terrain.yMatrix[x + 20][z + 20]))
+        //rotate tree randomly 
         tree.group.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/THREE.MathUtils.randFloatSpread(2))
         scene.add(tree.group);
     }

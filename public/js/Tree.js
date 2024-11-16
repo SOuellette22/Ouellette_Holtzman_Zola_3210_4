@@ -51,7 +51,7 @@ class Tree {
         engine.addRule("0", "1[0]0");
 
         let tree_string = engine.generate("0", iterations);
-        console.log(tree_string)
+        console.debug(tree_string)
 
         //create offsets 
         let offsets = new Element(0,this.branchLength, 0)
@@ -111,7 +111,7 @@ class Tree {
         engine.addRule("F", "FF", 0.8);
 
         let tree_string = engine.generate("X", iterations);
-        console.log(tree_string)
+        console.debug(tree_string)
 
         let offsets = new Element(0,this.branchLength, 0)
 
