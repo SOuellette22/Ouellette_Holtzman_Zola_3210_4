@@ -6,6 +6,13 @@ export default class Sun extends THREE.DirectionalLight{
 
         this.distance = 500 * block;
 
+        this.colors = {
+            white: [255,255,255],
+            yellow: [255,167,0],
+            yellrange: [255,103,0],
+            orange: [255,0,0]
+        }
+
         this.position.set(Math.cos(Math.PI/6) * this.distance, Math.sin(Math.PI/6) * this.distance, 0);
         // this.position.set(this.distance, 0, 0);
         this.castShadow = true;
@@ -30,54 +37,54 @@ export default class Sun extends THREE.DirectionalLight{
             if (x <= this.distance && x > Math.cos(Math.PI/18) * this.distance) {
                 var cp = this.distance;
                 var np = Math.cos(Math.PI/18) * this.distance;
-                this.color.r = this.findColor(cp, np, 238, 251, x);
-                this.color.g = this.findColor(cp, np, 93, 144, x);
-                this.color.b = this.findColor(cp, np, 108, 98, x);
+                this.color.r = this.findColor(cp, np, this.colors.orange.at(0), this.colors.yellrange.at(0), x);
+                this.color.g = this.findColor(cp, np, this.colors.orange.at(1), this.colors.yellrange.at(1), x);
+                this.color.b = this.findColor(cp, np, this.colors.orange.at(2), this.colors.yellrange.at(2), x);
             } 
 
             // From Pi/18 to Pi/9
             else if (x <= Math.cos(Math.PI/18) * this.distance && x > Math.cos(Math.PI/9) * this.distance) {
                 var cp = Math.cos(Math.PI/18) * this.distance;
                 var np = Math.cos(Math.PI/9) * this.distance;
-                this.color.r = this.findColor(cp, np, 251, 238, x);
-                this.color.g = this.findColor(cp, np, 144, 175, x);
-                this.color.b = this.findColor(cp, np, 98, 97, x);
+                this.color.r = this.findColor(cp, np, this.colors.yellrange.at(0), this.colors.yellow.at(0), x);
+                this.color.g = this.findColor(cp, np, this.colors.yellrange.at(1), this.colors.yellow.at(1), x);
+                this.color.b = this.findColor(cp, np, this.colors.yellrange.at(2), this.colors.yellow.at(2), x);
             }
 
             // From Pi/9 to Pi/6
             else if (x <= Math.cos(Math.PI/9) * this.distance && x > Math.cos(Math.PI/6) * this.distance) {
                 var cp = Math.cos(Math.PI/9) * this.distance;
                 var np = Math.cos(Math.PI/6) * this.distance;
-                this.color.r = this.findColor(cp, np, 238, 255, x);
-                this.color.g = this.findColor(cp, np, 175, 255, x);
-                this.color.b = this.findColor(cp, np, 97, 255, x);
+                this.color.r = this.findColor(cp, np, this.colors.yellow.at(0), this.colors.white.at(0), x);
+                this.color.g = this.findColor(cp, np, this.colors.yellow.at(1), this.colors.white.at(1), x);
+                this.color.b = this.findColor(cp, np, this.colors.yellow.at(2), this.colors.white.at(2), x);
             }
 
             // From Pi*5/6 to Pi*8/9
             else if (x<= Math.cos(Math.PI*5/6) * this.distance && x > Math.cos(Math.PI*8/9) * this.distance) {
                 var cp = Math.cos(Math.PI*5/6) * this.distance;
                 var np = Math.cos(Math.PI*8/9) * this.distance;
-                this.color.r = this.findColor(cp, np, 255, 238, x);
-                this.color.g = this.findColor(cp, np, 255, 175, x);
-                this.color.b = this.findColor(cp, np, 255, 97, x);
+                this.color.r = this.findColor(cp, np, this.colors.white.at(0), this.colors.yellow.at(0), x);
+                this.color.g = this.findColor(cp, np, this.colors.white.at(1), this.colors.yellow.at(1), x);
+                this.color.b = this.findColor(cp, np, this.colors.white.at(2), this.colors.yellow.at(2), x);
             }
 
             // From Pi*8/9 to Pi*17/18
             else if (x <= Math.cos(Math.PI*8/9) * this.distance && x > Math.cos(Math.PI*17/18) * this.distance) {
                 var cp = Math.cos(Math.PI*8/9) * this.distance;
                 var np = Math.cos(Math.PI*17/18) * this.distance;
-                this.color.r = this.findColor(cp, np, 238, 251, x);
-                this.color.g = this.findColor(cp, np, 175, 144, x);
-                this.color.b = this.findColor(cp, np, 97, 98, x);
+                this.color.r = this.findColor(cp, np, this.colors.yellow.at(0), this.colors.yellrange.at(0), x);
+                this.color.g = this.findColor(cp, np, this.colors.yellow.at(1), this.colors.yellrange.at(1), x);
+                this.color.b = this.findColor(cp, np, this.colors.yellow.at(2), this.colors.yellrange.at(2), x);
             }
 
             // From Pi*17/18 to Pi
             else if (x <= Math.cos(Math.PI*17/18) * this.distance && x > -this.distance) {
                 var cp = Math.cos(Math.PI*17/18) * this.distance;
                 var np = -this.distance;
-                this.color.r = this.findColor(cp, np, 251, 238, x);
-                this.color.g = this.findColor(cp, np, 144, 93, x);
-                this.color.b = this.findColor(cp, np, 98, 108, x);
+                this.color.r = this.findColor(cp, np, this.colors.yellrange.at(0), this.colors.orange.at(0), x);
+                this.color.g = this.findColor(cp, np, this.colors.yellrange.at(1), this.colors.orange.at(1), x);
+                this.color.b = this.findColor(cp, np, this.colors.yellrange.at(2), this.colors.orange.at(2), x);
             }
         }   
 
