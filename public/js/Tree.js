@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { GrammerEngine } from "./GrammerEngine.js"
+import MaterialLoader from './MaterialLoader.js';
 
 /**
  * Tree creates a tree 
@@ -16,27 +17,17 @@ import { GrammerEngine } from "./GrammerEngine.js"
  * scene.add(tree.tree_group)
  */
 class Tree {
-    constructor(branchLength) {
+    constructor(branchLength, loader) {
         //example of grammer engine remove later
         this.branchLength = branchLength;
 
         this.stack = [];
         
         this.group = new THREE.Group();
-        this.textureLoader = new THREE.TextureLoader();
 
-        this.branchMat = new THREE.MeshPhongMaterial({
-            //map: this.textureLoader.load("textures/Bark014_4K-PNG_Color.png"),
-            //normalMap: this.textureLoader.load("textures/Bark014_4K-PNG_NormalGL.png"),
-            color: 0xeb7f1a
-        })
-
-        this.leafMat = new THREE.MeshPhongMaterial({
-            //map: this.textureLoader.load("textures/Bark014_4K-PNG_Color.png"),
-            //normalMap: this.textureLoader.load("textures/Bark014_4K-PNG_NormalGL.png"),
-            color: 0x36eb1a
-        })
-
+        //load in material
+        this.branchMat = loader.getBark();
+        this.leafMat = loader.getLeaf();
     }
 
     /**

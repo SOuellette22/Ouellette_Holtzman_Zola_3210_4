@@ -31,9 +31,11 @@ const matLoader = new MaterialLoader();
 const terrain = new Terrain(block, 51, 5, 10, matLoader);
 
 scene.add(terrain);
+
+//create forest 
 for (let i = -20; i < 21; i += 5) {
     for (let j = -20; j < 21; j +=  5) {
-        let tree = new Tree(block);
+        let tree = new Tree(block, matLoader);
         if (Math.random() < 0.5 ) {
             tree.fractalTreeGenerate(THREE.MathUtils.randInt(3,4));
         }

@@ -28,6 +28,19 @@ export default class MaterialLoader {
         this.iron = new THREE.MeshPhongMaterial({ map: this.loader.load('./public/textures/Iron_Ore_Block.png') });
         this.gold = new THREE.MeshPhongMaterial({ map: this.loader.load('./public/textures/Gold_Ore_Block.png') });
         this.coal = new THREE.MeshPhongMaterial({ map: this.loader.load('./public/textures/Coal_Ore_Block.png') });
+
+        this.bark = new THREE.MeshPhongMaterial({
+            map: this.loader.load("textures/Bark014_4K-PNG_Color.png"),
+            normalMap: this.loader.load("textures/Bark014_4K-PNG_NormalGL.png"),
+            color: 0xeb7f1a
+        })
+
+        this.leaf = this.leafMat = new THREE.MeshPhongMaterial({
+            map: this.loader.load("textures/Bark014_4K-PNG_Color.png"),
+            normalMap: this.loader.load("textures/Bark014_4K-PNG_NormalGL.png"),
+            color: 0x36eb1a
+        })
+
     }
 
     /**
@@ -92,5 +105,13 @@ export default class MaterialLoader {
      */
     getCoal() {
         return this.coal;
+    }
+
+    getBark() {
+        return this.bark;
+    }
+
+    getLeaf() {
+        return this.leaf;
     }
 }
