@@ -22,7 +22,7 @@ class Tree {
 
         this.stack = [];
         
-        this.tree_group = new THREE.Group();
+        this.group = new THREE.Group();
         this.textureLoader = new THREE.TextureLoader();
 
         this.branchMat = new THREE.MeshPhongMaterial({
@@ -62,13 +62,13 @@ class Tree {
                 case "1": 
                     //draw branch and move up 
                     this._drawBranch(offsets);
-                    offsets.y += this.branchLength * 0.15;
+                    offsets.y += this.branchLength * 0.35;
 
                     break;
                 case "0": 
                     //draw branch and move up
                     this._drawLeaf(offsets);
-                    offsets.y += this.branchLength * 0.15;
+                    offsets.y += this.branchLength * 0.35;
                     break;
                 case "[":
                     //push state to stack
@@ -87,10 +87,14 @@ class Tree {
         }
 
         //clone group to create a copy to rotate so it is more 3D
-        let treeGroup2 = this.tree_group.clone();
-
+        
+        let treeGroup2 = this.group.clone();
         treeGroup2.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
-        this.tree_group.add(treeGroup2)
+        this.group.add(treeGroup2)
+
+        //center tree on block
+        this.group.translateX(-0.5);
+        this.group.translateZ(-0.5);    
     }
 
     /**
@@ -100,8 +104,8 @@ class Tree {
     barnsleyFern(iterations) {
         let engine = new GrammerEngine();
 
-        engine.addRule("X", " F+[[X]-X]-F[-FX]+X", 0.5);
-        engine.addRule("F", "FF", 0.5);
+        engine.addRule("X", " F+[[X]-X]-F[-FX]+X", 0.8);
+        engine.addRule("F", "FF", 0.8);
 
         let tree_string = engine.generate("X", iterations);
         console.log(tree_string)
@@ -112,9 +116,14 @@ class Tree {
             switch(curr_char) {
                 case "F":
                     this._drawBranch(offsets);
+                    offsets.y += this.branchLength * 0.45;
+
                     break;
                 case "X":
-                    this._drawLeaf(offsets);
+                    if (Math.random() < 0.25) {
+                        this._drawLeaf(offsets);
+                    }
+                    //this._drawLeaf(offsets);
                     break;
                 case "-":
                     offsets.angle += 25;
@@ -128,19 +137,26 @@ class Tree {
                     this.stack.push(new Element(offsets.x, offsets.y, offsets.angle));
                     break;
                 case "]":
+                    if (Math.random() < 0.25) {
+                        this._drawLeaf(offsets);
+                    }
                     offsets = this.stack.pop();
                 
             }
-            offsets.y += this.branchLength * 0.15;
         }
 
-        let treeGroup2 = this.tree_group.clone();
+        let treeGroup2 = this.group.clone();
+        
         treeGroup2.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/2)
-        this.tree_group.add(treeGroup2)
+        this.group.add(treeGroup2)
+        
+        //center tree on block
+        this.group.translateX(-0.5);
+        this.group.translateZ(-0.5); 
     }
 
     _drawBranch(offsets) {
-        let geom = new THREE.CylinderGeometry( 0.5, 0.5, this.branchLength, 32 );
+        let geom = new THREE.CylinderGeometry( this.branchLength/4, this.branchLength/4, this.branchLength, 32 );
 
         let new_branch = new THREE.Mesh(geom,this.branchMat);
         new_branch.castShadow = true;
@@ -148,12 +164,12 @@ class Tree {
         new_branch.rotateZ(THREE.MathUtils.degToRad(offsets.angle));
         new_branch.position.set(offsets.x, offsets.y,0);
 
-        this.tree_group.add(new_branch);
+        this.group.add(new_branch);
         
     }
     
     _drawLeaf(offsets) {
-        let geom = new THREE.CylinderGeometry( 0.5, 0.5, this.branchLength, 32 );
+        let geom = new THREE.CylinderGeometry( this.branchLength/4, this.branchLength/4, this.branchLength, 32 );
 
         let new_branch = new THREE.Mesh(geom,this.leafMat);
         new_branch.castShadow = true;
@@ -162,15 +178,15 @@ class Tree {
         new_branch.rotateZ(THREE.MathUtils.degToRad(offsets.angle));
         new_branch.position.set(offsets.x,offsets.y,0);
 
-        this.tree_group.add(new_branch);
+        this.group.add(new_branch);
         let nextLeaf = new_branch.clone();
         nextLeaf.rotateX(Math.PI/4);
-        this.tree_group.add(nextLeaf)
+        this.group.add(nextLeaf)
 
-        this.tree_group.add(new_branch);
+        this.group.add(new_branch);
         nextLeaf = new_branch.clone();
         nextLeaf.rotateX(-Math.PI/2);
-        this.tree_group.add(nextLeaf)
+        this.group.add(nextLeaf)
     }
 
     _rotateAboutWorldAxis(object, axis, angle) {

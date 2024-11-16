@@ -25,21 +25,23 @@ controls.update();
 
 let tree = new Tree(1);
 tree.fractalTreeGenerate(4);
-scene.add(tree.tree_group)
+tree.group.translateY(-1)
+scene.add(tree.group)
 
-let tree2 = new Tree(0.5);
-tree2.barnsleyFern(4);
+let tree2 = new Tree(1);
+tree2.barnsleyFern(3);
 
-tree2.tree_group.translateX(5);
-tree2.tree_group.translateZ(5);
+tree2.group.translateX(5);
+tree2.group.translateY(5);
+tree2.group.translateZ(5);
 
-scene.add(tree2.tree_group);
+scene.add(tree2.group);
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
 const matLoader = new MaterialLoader();
-const terrain = new Terrain(block, 100, 5, 10, matLoader);
+const terrain = new Terrain(block, 41, 5, 10, matLoader);
 scene.add(terrain);
 
 // // Terrain parameters
