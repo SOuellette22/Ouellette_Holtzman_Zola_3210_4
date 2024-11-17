@@ -90,7 +90,7 @@ class Rule {
      * @returns true if rule should be triggered false otherwise
      */
     match(char) {
-        return (char === this.target_input && Math.random() < this.probability);
+        return (char === this.target_input && (Math.random() < this.probability));
     }
 
     /**

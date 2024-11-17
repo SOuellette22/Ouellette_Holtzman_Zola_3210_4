@@ -5,8 +5,6 @@ import Moon from './Moon.js';
 import Terrain from "./Terrain.js";
 import MaterialLoader from './MaterialLoader.js';
 import {Tree } from "./Tree.js"
-import Block from './Block.js';
-import { randFloat, randFloatSpread } from 'three/src/math/MathUtils.js';
 
 const block = 1;
 
@@ -26,18 +24,22 @@ controls.update();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+renderer.shadowMap.enabled = true;
 
 const matLoader = new MaterialLoader();
 const terrain = new Terrain(block, 51, 5, 10, matLoader);
-
 scene.add(terrain);
 
 //create forest 
 for (let i = -20; i < 21; i += 5) {
     for (let j = -20; j < 21; j +=  5) {
         let tree = new Tree(block, matLoader);
-        if (Math.random() < 0.5 ) {
-            tree.fractalTreeGenerate(THREE.MathUtils.randInt(3,4));
+        let rand = Math.random();
+        if (rand < 0.3 ) {
+            tree.fractalTreeGenerate(4);
+        }
+        else if (rand < 0.6) {
+            tree.randTree(THREE.MathUtils.randInt(3,4))
         }
         else {
             tree.barnsleyFern(3)
@@ -46,13 +48,27 @@ for (let i = -20; i < 21; i += 5) {
         let x = i + THREE.MathUtils.randInt(-4,4);
         let z = j + THREE.MathUtils.randInt(-5,5);
 
+        tree.computeBoundingSphere;
+
         tree.group.position.set(x, 0, z)
         //console.log(Math.floor(terrain.yMatrix[x + 20][z + 20]))
         //rotate tree randomly 
         tree.group.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/THREE.MathUtils.randFloatSpread(2))
+
+        if (i > 10) {
+            console.log(tree.boundingSphere)
+        }
+        const treeBoundingSphere = new THREE.Mesh(
+            new THREE.SphereGeometry(tree.boundingSphere.radius, 32, 32),
+            new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
+        );
+
+        treeBoundingSphere.position.copy(tree.group.position)
         scene.add(tree.group);
+        scene.add(treeBoundingSphere)
     }
 }
+
 
 // // Terrain parameters
 // const gridSize = 200;

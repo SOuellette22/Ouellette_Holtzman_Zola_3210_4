@@ -28,6 +28,8 @@ class Tree {
         //load in material
         this.branchMat = loader.getBark();
         this.leafMat = loader.getLeaf();
+
+        this.boundingSphere = new THREE.Sphere();
     }
 
     /**
@@ -152,6 +154,57 @@ class Tree {
         this.group.receiveShadow = true;
     }
 
+    randTree(iterations) {
+        let engine = new GrammerEngine();
+
+        engine.addRule("F", "F[+F][-F]F", 0.50);
+        engine.addRule("F", "F[-F]F", 0.3);
+        engine.addRule("F", "F[+F]F", 0.2)
+
+        let tree_string = engine.generate("F", iterations);
+        console.debug(tree_string)
+
+        let offsets = new Element(0,this.branchLength, 0)
+
+        for (let curr_char of tree_string) {
+            switch(curr_char) {
+                case "F":
+                    this._drawBranch(offsets);
+                    offsets.y += this.branchLength * 0.65;
+                    break;
+                case "-":
+                    offsets.angle += 22.5;
+                    offsets.x -= this.branchLength * 0.7;
+                    break;
+                case "+":
+                    offsets.angle -= 22.5;
+                    offsets.x += this.branchLength * 0.68;
+                    break;
+                case "[":
+                    this.stack.push(new Element(offsets.x, offsets.y, offsets.angle));
+                    break;
+                case "]":
+                    offsets.y += this.branchLength * 0.25;
+                    if (Math.random() < 0.5) {
+                        this._drawLeaf(offsets);
+                    }
+                    offsets = this.stack.pop();
+            }
+        }
+
+        let treeGroup2 = this.group.clone();
+        
+        treeGroup2.rotateOnAxis(new THREE.Vector3(0,1,0), -Math.PI/2)
+        this.group.add(treeGroup2)
+
+        //center tree on block
+        this.group.translateX(-0.5);
+        this.group.translateZ(-0.5); 
+
+        this.group.castShadow = true;
+        this.group.receiveShadow = true;
+    }
+
     _drawBranch(offsets) {
         let geom = new THREE.CylinderGeometry( this.branchLength/4, this.branchLength/4, this.branchLength, 32 );
 
@@ -160,6 +213,7 @@ class Tree {
         new_branch.receiveShadow = true;
         new_branch.rotateZ(THREE.MathUtils.degToRad(offsets.angle));
         new_branch.position.set(offsets.x, offsets.y,0);
+
 
         this.group.add(new_branch);
         
@@ -184,8 +238,15 @@ class Tree {
         nextLeaf = new_branch.clone();
         nextLeaf.rotateX(-Math.PI/2);
         this.group.add(nextLeaf)
+    }
+
+    computeBoundingSphere() {
+        let box = new THREE.Box3().setFromObject(this.group)
+        box.getBoundingSphere(this.boundingSphere);
 
     }
+
+    
 }
 
 class Element {
