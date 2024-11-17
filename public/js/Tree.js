@@ -29,7 +29,21 @@ class Tree {
         this.branchMat = loader.getBark();
         this.leafMat = loader.getLeaf();
 
-        this.boundingSphere = new THREE.Sphere();
+        this.boundingBox = new THREE.Box3();
+    }
+
+    /**
+     * Test if a point intersects tree
+     * @param {THREE.Vector3} position 
+     * @returns True if point is intersecting tree
+     */
+    isPointIntersecting(position){
+        return this.boundingBox.containsPoint(position)
+    }
+
+    computBoundingBox () {
+        //this.group.updateMatrixWorld(true);
+        this.boundingBox.setFromCenterAndSize(this.group.position, new THREE.Vector3(0.5,10,0.5))
     }
 
     /**
@@ -223,30 +237,21 @@ class Tree {
         let geom = new THREE.CylinderGeometry( this.branchLength/4, this.branchLength/4, this.branchLength, 32 );
 
         let new_branch = new THREE.Mesh(geom,this.leafMat);
-        new_branch.castShadow = true;
-        new_branch.receiveShadow = true;
 
         new_branch.rotateZ(THREE.MathUtils.degToRad(offsets.angle));
         new_branch.position.set(offsets.x,offsets.y,0);
 
         this.group.add(new_branch);
+
         let nextLeaf = new_branch.clone();
         nextLeaf.rotateX(Math.PI/4);
         this.group.add(nextLeaf)
 
-        this.group.add(new_branch);
         nextLeaf = new_branch.clone();
         nextLeaf.rotateX(-Math.PI/2);
         this.group.add(nextLeaf)
     }
 
-    computeBoundingSphere() {
-        let box = new THREE.Box3().setFromObject(this.group)
-        box.getBoundingSphere(this.boundingSphere);
-
-    }
-
-    
 }
 
 class Element {

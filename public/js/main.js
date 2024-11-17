@@ -45,27 +45,22 @@ for (let i = -20; i < 21; i += 5) {
             tree.barnsleyFern(3)
         }
 
-        let x = i + THREE.MathUtils.randInt(-4,4);
-        let z = j + THREE.MathUtils.randInt(-5,5);
+        let x = i + THREE.MathUtils.randInt(-3,3);
+        let z = j + THREE.MathUtils.randInt(-3,3);
 
-        tree.computeBoundingSphere;
 
         tree.group.position.set(x, 0, z)
         //console.log(Math.floor(terrain.yMatrix[x + 20][z + 20]))
         //rotate tree randomly 
         tree.group.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/THREE.MathUtils.randFloatSpread(2))
+        tree.computBoundingBox();
 
-        if (i > 10) {
-            console.log(tree.boundingSphere)
-        }
-        const treeBoundingSphere = new THREE.Mesh(
-            new THREE.SphereGeometry(tree.boundingSphere.radius, 32, 32),
-            new THREE.MeshBasicMaterial({ color: 0xff0000, wireframe: true })
-        );
-
-        treeBoundingSphere.position.copy(tree.group.position)
         scene.add(tree.group);
-        scene.add(treeBoundingSphere)
+
+        //for testing bounding box 
+        const helper = new THREE.Box3Helper( tree.boundingBox, 0xffff00 * Math.random() );
+        scene.add( helper );    
+        
     }
 }
 
