@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import { GrammerEngine } from "./GrammerEngine.js"
-import MaterialLoader from './MaterialLoader.js';
 
 /**
  * Tree creates a tree 
@@ -30,6 +29,7 @@ class Tree {
         this.leafMat = loader.getLeaf();
 
         this.boundingBox = new THREE.Box3();
+        this.boxSize;
     }
 
     /**
@@ -43,7 +43,7 @@ class Tree {
 
     computBoundingBox () {
         //this.group.updateMatrixWorld(true);
-        this.boundingBox.setFromCenterAndSize(this.group.position, new THREE.Vector3(0.5,10,0.5))
+        this.boundingBox.setFromCenterAndSize(this.group.position, this.boxSize)
     }
 
     /**
@@ -105,6 +105,8 @@ class Tree {
 
         this.group.castShadow = true;
         this.group.receiveShadow = true;
+
+        this.boxSize = new THREE.Vector3(0.5, 6, 0.5);
     }
 
     /**
@@ -166,6 +168,9 @@ class Tree {
 
         this.group.castShadow = true;
         this.group.receiveShadow = true;
+
+        this.boxSize = new THREE.Vector3(1, 6, 1);
+
     }
 
     randTree(iterations) {
@@ -217,6 +222,8 @@ class Tree {
 
         this.group.castShadow = true;
         this.group.receiveShadow = true;
+
+        this.boxSize = new THREE.Vector3(1.5, 6, 1.5);
     }
 
     _drawBranch(offsets) {
