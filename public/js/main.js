@@ -10,6 +10,8 @@ const block = 1;
 const blockNumber = 50;
 const padding = 3;
 
+const treeMap = new Map();
+
 // Set up the scene, camera, and renderer
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(
@@ -61,6 +63,7 @@ for (let i = -(blockNumber/2) + padding; i < blockNumber/2 - padding; i += 5) {
         tree.computBoundingBox();
 
         scene.add(tree.group);
+        treeMap.set(tree.group.id, tree);
 
         //for testing bounding box 
         //const helper = new THREE.Box3Helper( tree.boundingBox, 0xffff00 * Math.random() );
@@ -68,7 +71,6 @@ for (let i = -(blockNumber/2) + padding; i < blockNumber/2 - padding; i += 5) {
         
     }
 }
-
 
 // // Terrain parameters
 // const gridSize = 200;
