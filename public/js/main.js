@@ -7,7 +7,8 @@ import MaterialLoader from './MaterialLoader.js';
 import {Tree } from "./Tree.js"
 
 const block = 1;
-const blockNumber = 51;
+const blockNumber = 50;
+const padding = 3;
 
 // Set up the scene, camera, and renderer
 const scene = new THREE.Scene();
@@ -34,8 +35,8 @@ scene.add(terrain);
 console.log(terrain.yMatrix);
 
 //create forest 
-for (let i = -20; i < 21; i += 5) {
-    for (let j = -20; j < 21; j +=  5) {
+for (let i = -(blockNumber/2) + padding; i < blockNumber/2 - padding; i += 5) {
+    for (let j = -(blockNumber/2) + padding; j < blockNumber/2 - padding; j +=  5) {
         let tree = new Tree(block, matLoader);
         let rand = Math.random();
         if (rand < 0.3 ) {
@@ -48,12 +49,11 @@ for (let i = -20; i < 21; i += 5) {
             tree.barnsleyFern(3)
         }
 
-        let x = i + THREE.MathUtils.randInt(-3,3);
-        let y = terrain.yMatrix[Math.floor((i + 20)/2)][Math.floor((j + 20)/2)]
-        let z = j + THREE.MathUtils.randInt(-3,3);
-        
-        console.log("original i: ", i, " original j ", j)
-        console.log("I is ",Math.floor((i + 20)/2), " j is ",Math.floor((j + 20)/2), " y is ", y, " for tree pos: ", tree.group.position)
+        let x = i + THREE.MathUtils.randInt(-padding,padding);
+        let z = j + THREE.MathUtils.randInt(-padding,padding);
+        console.log("x",x, "z", z)
+        let y = terrain.yMatrix[x + blockNumber/2][z + blockNumber/2]
+
         tree.group.position.set(x, Math.floor(y) - 10, z)
 
         //rotate tree randomly 
