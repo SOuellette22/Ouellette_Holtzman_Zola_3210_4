@@ -14,6 +14,12 @@ import { GrammerEngine } from "./GrammerEngine.js"
  * tree.barnsleyFern(5);
  * //add to scene
  * scene.add(tree.tree_group)
+ * //Give tree outline 
+ * tree.glow()
+ * //remove tree's outline
+ * tree.unglow()
+ * //remove tree
+ * tree.remove()
  */
 class Tree {
     constructor(branchLength, loader) {
@@ -30,6 +36,11 @@ class Tree {
 
         this.boundingBox = new THREE.Box3();
         this.boxSize;
+
+        // is not a block
+        this.isBlock = false;
+        // is a tree
+        this.isTree = true;
     }
 
     /**
@@ -49,8 +60,28 @@ class Tree {
         this.boundingBox.setFromCenterAndSize(this.group.position, this.boxSize)
     }
 
-    kill() {
-        this.group.visible = false;
+    /**
+     * Adds outline to tree
+     */
+    glow() {
+        let glowColor = 0x505050;
+        this.branchMat.emissive.setHex(glowColor);
+        this.leafMat.emissive.setHex(glowColor);
+    }
+
+    /**
+     * Removes any outline from tree
+     */
+    unglow() {
+        this.branchMat.emissive.setHex(0x000000);
+        this.leafMat.emissive.setHex(0x000000);
+    }
+
+    /**
+     * Remove(KILL!) the tree from the scene  
+     */
+    remove() {
+        this.group.parent.remove(this.group);
     }
 
     /**
