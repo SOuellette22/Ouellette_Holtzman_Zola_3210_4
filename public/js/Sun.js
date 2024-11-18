@@ -1,6 +1,11 @@
 import * as THREE from 'three';
 
 export default class Sun extends THREE.DirectionalLight{
+    /**
+     * Constucts the sun object for the scene
+     * 
+     * @param {Number} block makes sure sizing is correct throughout the scene
+     */
     constructor(block) {
         super(0xffffff, 1);
 
@@ -27,6 +32,11 @@ export default class Sun extends THREE.DirectionalLight{
         this.speed = Math.PI / 120;
     }
 
+    /**
+     * Updates the suns position and color based on its position in space
+     * 
+     * @param {Number} d is the delta time between frames
+     */
     update(d) {
 
         const x = this.position.x;
@@ -112,6 +122,13 @@ export default class Sun extends THREE.DirectionalLight{
 
     }
 
+    /**
+     * This function rotates an object about a given axis
+     * 
+     * @param {THREE.Object3D} object 3D object you want to rotate
+     * @param {THREE.Vector3} axis Axis you want to rotate the object about
+     * @param {Number} angle How fast you want the object to rotate in radians
+     */
     rotateAboutWorldAxis(object, axis, angle) {
         var rotationMatrix = new THREE.Matrix4() ;
         rotationMatrix.makeRotationAxis( axis.normalize() ,angle) ;
@@ -122,6 +139,16 @@ export default class Sun extends THREE.DirectionalLight{
         object.position.z = newPos.z ;
     }
 
+    /**
+     * This function finds the percent of a color based on the position of the object
+     * 
+     * @param {Number} cp current position you passed with a color
+     * @param {Number} np next position you get to with a color
+     * @param {Number} cc current color you passed
+     * @param {Number} nc next color you will get to
+     * @param {Number} p position of the object in space (x value)
+     * @returns the proportion of the color you should be at
+     */
     findColor(cp, np, cc, nc, p) {
         var color = 0;
 
@@ -130,6 +157,16 @@ export default class Sun extends THREE.DirectionalLight{
         return color / 255;
     }
 
+    /**
+     * This funciton finds the intensity of the light based on the position of the object
+     * 
+     * @param {Number} cp current position you passed with a intensity
+     * @param {Number} np next position you get to with a intensity
+     * @param {Number} ci current intensity you passed
+     * @param {Number} ni next intensity you will get to
+     * @param {Number} p position of the object in space (x value)
+     * @returns the proportion of the intensity you should be at
+     */
     findIntensity(cp, np, ci, ni, p) {
         var intensity = 0;
 
