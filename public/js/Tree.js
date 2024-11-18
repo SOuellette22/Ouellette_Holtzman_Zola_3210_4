@@ -42,8 +42,15 @@ class Tree {
     }
 
     computBoundingBox () {
-        //this.group.updateMatrixWorld(true);
+        //if it is not visible we should never collide with it 
+        if (!this.group.visible) {
+            return false;
+        }
         this.boundingBox.setFromCenterAndSize(this.group.position, this.boxSize)
+    }
+
+    kill() {
+        this.group.visible = false;
     }
 
     /**
