@@ -6,10 +6,10 @@ export default class Moon extends THREE.DirectionalLight{
      * 
      * @param {Number} block makes sure sizing is correct throughout the scene
      */
-    constructor(block) {
+    constructor(block, blockNumber) {
         super(0x98c1fa, 0.1);
 
-        this.distance = 500 * block;
+        this.distance = blockNumber * block;
 
         this.position.set(-Math.cos(Math.PI/6) * this.distance, -Math.sin(Math.PI/6) * this.distance, 0);
         this.castShadow = true;

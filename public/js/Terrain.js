@@ -31,7 +31,7 @@ export default class Terrain extends THREE.Group {
             this.yMatrix.push([]);
             for (var j = 0; j < this.size; j++) {
                 var y = noise.perlin2(i / 20, j / 20) * this.heightChange + this.height;
-                this.yMatrix[i].push(y);
+                this.yMatrix[i].push(Math.floor(y));
             }
         }
 
@@ -47,10 +47,10 @@ export default class Terrain extends THREE.Group {
         // Loop to get to every part of the terrain
         for (var i = 0; i < this.size; i++) {
             for (var j = 0; j < this.size; j++) {
-                for (var k = 0; k < this.yMatrix[i][j]; k++) {
+                for (var k = 0; k <= this.yMatrix[i][j]; k++) {
 
                     // Check if the block is at the edge of the terrain
-                    if (k >= this.yMatrix[i][j] - 1 ||
+                    if (k == this.yMatrix[i][j] ||
                         i == 0 || i == this.size - 1 ||
                         j == 0 || j == this.size - 1) 
                     {

@@ -165,7 +165,7 @@ scene.add(ambientLight);
 
 var sun = new Sun(block, blockNumber);
 
-var moon = new Moon(block);
+var moon = new Moon(block, blockNumber);
 
 var clock = new THREE.Clock();
 
