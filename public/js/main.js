@@ -31,6 +31,8 @@ const matLoader = new MaterialLoader();
 const terrain = new Terrain(block, blockNumber, 5, 10, matLoader);
 scene.add(terrain);
 
+console.log(terrain.yMatrix);
+
 //create forest 
 for (let i = -20; i < 21; i += 5) {
     for (let j = -20; j < 21; j +=  5) {
@@ -47,11 +49,13 @@ for (let i = -20; i < 21; i += 5) {
         }
 
         let x = i + THREE.MathUtils.randInt(-3,3);
+        let y = terrain.yMatrix[Math.floor((i + 20)/2)][Math.floor((j + 20)/2)]
         let z = j + THREE.MathUtils.randInt(-3,3);
+        
+        console.log("original i: ", i, " original j ", j)
+        console.log("I is ",Math.floor((i + 20)/2), " j is ",Math.floor((j + 20)/2), " y is ", y, " for tree pos: ", tree.group.position)
+        tree.group.position.set(x, Math.floor(y) - 10, z)
 
-
-        tree.group.position.set(x, 0, z)
-        //console.log(Math.floor(terrain.yMatrix[x + 20][z + 20]))
         //rotate tree randomly 
         tree.group.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/THREE.MathUtils.randFloatSpread(2))
         tree.computBoundingBox();
@@ -59,8 +63,8 @@ for (let i = -20; i < 21; i += 5) {
         scene.add(tree.group);
 
         //for testing bounding box 
-        const helper = new THREE.Box3Helper( tree.boundingBox, 0xffff00 * Math.random() );
-        scene.add( helper );    
+        //const helper = new THREE.Box3Helper( tree.boundingBox, 0xffff00 * Math.random() );
+        //scene.add( helper );    
         
     }
 }
@@ -169,7 +173,7 @@ scene.add(sun);
 scene.add(sun.helper);
 scene.add(sun.mesh);
 const shadowHelper = new THREE.CameraHelper(sun.shadow.camera);
-scene.add(shadowHelper);
+//scene.add(shadowHelper);
 scene.add(moon);
 scene.add(moon.helper);
 scene.add(moon.mesh);
