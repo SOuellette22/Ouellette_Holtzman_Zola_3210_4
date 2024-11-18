@@ -7,7 +7,10 @@ import MaterialLoader from './MaterialLoader.js';
 import {Tree } from "./Tree.js"
 
 const block = 1;
-const blockNumber = 51;
+const blockNumber = 50;
+const padding = 3;
+
+const treeMap = new Map();
 
 // Set up the scene, camera, and renderer
 const scene = new THREE.Scene();
@@ -31,9 +34,11 @@ const matLoader = new MaterialLoader();
 const terrain = new Terrain(block, blockNumber, 5, 10, matLoader);
 scene.add(terrain);
 
+console.log(terrain.yMatrix);
+
 //create forest 
-for (let i = -20; i < 21; i += 5) {
-    for (let j = -20; j < 21; j +=  5) {
+for (let i = -(blockNumber/2) + padding; i < blockNumber/2 - padding; i += 5) {
+    for (let j = -(blockNumber/2) + padding; j < blockNumber/2 - padding; j +=  5) {
         let tree = new Tree(block, matLoader);
         let rand = Math.random();
         if (rand < 0.3 ) {
@@ -46,25 +51,26 @@ for (let i = -20; i < 21; i += 5) {
             tree.barnsleyFern(3)
         }
 
-        let x = i + THREE.MathUtils.randInt(-3,3);
-        let z = j + THREE.MathUtils.randInt(-3,3);
+        let x = i + THREE.MathUtils.randInt(-padding,padding);
+        let z = j + THREE.MathUtils.randInt(-padding,padding);
+        console.log("x",x, "z", z)
+        let y = terrain.yMatrix[x + blockNumber/2][z + blockNumber/2]
 
+        tree.group.position.set(x, Math.floor(y) - 10, z)
 
-        tree.group.position.set(x, 0, z)
-        //console.log(Math.floor(terrain.yMatrix[x + 20][z + 20]))
         //rotate tree randomly 
         tree.group.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/THREE.MathUtils.randFloatSpread(2))
         tree.computBoundingBox();
 
         scene.add(tree.group);
+        treeMap.set(tree.group.id, tree);
 
         //for testing bounding box 
-        const helper = new THREE.Box3Helper( tree.boundingBox, 0xffff00 * Math.random() );
-        scene.add( helper );    
+        //const helper = new THREE.Box3Helper( tree.boundingBox, 0xffff00 * Math.random() );
+        //scene.add( helper );    
         
     }
 }
-
 
 // // Terrain parameters
 // const gridSize = 200;
@@ -161,7 +167,7 @@ scene.add(ambientLight);
 
 var sun = new Sun(block, blockNumber);
 
-var moon = new Moon(block);
+var moon = new Moon(block, blockNumber);
 
 var clock = new THREE.Clock();
 
@@ -169,7 +175,7 @@ scene.add(sun);
 scene.add(sun.helper);
 scene.add(sun.mesh);
 const shadowHelper = new THREE.CameraHelper(sun.shadow.camera);
-scene.add(shadowHelper);
+//scene.add(shadowHelper);
 scene.add(moon);
 scene.add(moon.helper);
 scene.add(moon.mesh);
