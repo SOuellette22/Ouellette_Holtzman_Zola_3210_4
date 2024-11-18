@@ -7,6 +7,7 @@ import MaterialLoader from './MaterialLoader.js';
 import {Tree } from "./Tree.js"
 
 const block = 1;
+const blockNumber = 51;
 
 // Set up the scene, camera, and renderer
 const scene = new THREE.Scene();
@@ -27,7 +28,7 @@ document.body.appendChild(renderer.domElement);
 renderer.shadowMap.enabled = true;
 
 const matLoader = new MaterialLoader();
-const terrain = new Terrain(block, 51, 5, 10, matLoader);
+const terrain = new Terrain(block, blockNumber, 5, 10, matLoader);
 scene.add(terrain);
 
 //create forest 
@@ -158,7 +159,8 @@ scene.add(ambientLight);
 //   }
 // }
 
-var sun = new Sun(block);
+var sun = new Sun(block, blockNumber);
+
 var moon = new Moon(block);
 
 var clock = new THREE.Clock();
@@ -166,6 +168,8 @@ var clock = new THREE.Clock();
 scene.add(sun);
 scene.add(sun.helper);
 scene.add(sun.mesh);
+const shadowHelper = new THREE.CameraHelper(sun.shadow.camera);
+scene.add(shadowHelper);
 scene.add(moon);
 scene.add(moon.helper);
 scene.add(moon.mesh);
@@ -178,7 +182,7 @@ function animate() {
 
     sun.update(d);
     sun.helper.update();
-
+    shadowHelper.update();
     moon.update(d);
     moon.helper.update();
 

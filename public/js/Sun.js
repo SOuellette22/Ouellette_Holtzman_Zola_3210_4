@@ -1,10 +1,10 @@
 import * as THREE from 'three';
 
 export default class Sun extends THREE.DirectionalLight{
-    constructor(block) {
+    constructor(block, blockNumber) {
         super(0xffffff, 1);
 
-        this.distance = 500 * block;
+        this.distance = blockNumber * block;
 
         this.colors = {
             white: [255,255,255],
@@ -23,6 +23,17 @@ export default class Sun extends THREE.DirectionalLight{
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.position.set(Math.cos(Math.PI/6) * this.distance, Math.sin(Math.PI/6) * this.distance, 0);
         // this.mesh.position.set(this.distance, 0, 0);
+
+        //please note this code is from chatGPT and should be reviewed it does seem to fix the shadow issues -seth
+        this.shadow.camera.near = 1;  // Distance to the near clipping plane
+        this.shadow.camera.far = this.distance * 2;  // Ensure it encompasses your scene
+        this.shadow.camera.left = -this.distance;
+        this.shadow.camera.right = this.distance;
+        this.shadow.camera.top = this.distance;
+        this.shadow.camera.bottom = -this.distance;
+
+        this.shadow.mapSize.width = 2048; // Higher resolution
+        this.shadow.mapSize.height = 2048;
 
         this.speed = Math.PI / 120;
     }
