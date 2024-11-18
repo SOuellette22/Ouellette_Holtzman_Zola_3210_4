@@ -15,7 +15,7 @@ export default class Moon extends THREE.DirectionalLight{
         this.castShadow = true;
         this.helper = new THREE.DirectionalLightHelper(this, 5);
 
-        this.geometry = new THREE.BoxGeometry(10,10,10);
+        this.geometry = new THREE.SphereGeometry(block * (blockNumber/20), 32, 32);
         this.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.position.set(-Math.cos(Math.PI/6) * this.distance, -Math.sin(Math.PI/6) * this.distance, 0);

@@ -19,6 +19,22 @@ export default class Block extends THREE.Mesh {
 
         this.receiveShadow = true;
         this.isBedrock = false;
+
+        this.isBlock = true;
+    }
+
+    /**
+     * This function will make the block glow
+     */
+    glow() {
+        this.material.emissive.setHex(0x505050);
+    }
+
+    /**
+     * This function will make the block stop glowing
+     */
+    unglow() {
+        this.material.emissive.setHex(0x000000);
     }
 
     /**
