@@ -1,22 +1,13 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'https://unpkg.com/three@0.141.0/examples/jsm/controls/OrbitControls.js';
-import { ImprovedNoise } from 'three/examples/jsm/math/ImprovedNoise.js';
 import Sun from './Sun.js';
 import Moon from './Moon.js';
-import { GrammerEngine } from "./GrammerEngine.js"
 import Terrain from "./Terrain.js";
 import MaterialLoader from './MaterialLoader.js';
+import {Tree } from "./Tree.js"
 
 const block = 1;
-
-//example of grammer engine remove later
-let engine = new GrammerEngine();
-
-engine.addRule("1", "11");
-engine.addRule("0", "1[0]0")
-//engine.addRule("0", "1[0]0", 0.5);
-
-console.log(engine.generate("0", 5));
+const blockNumber = 51;
 
 // Set up the scene, camera, and renderer
 const scene = new THREE.Scene();
@@ -34,10 +25,46 @@ controls.update();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
+renderer.shadowMap.enabled = true;
 
 const matLoader = new MaterialLoader();
-const terrain = new Terrain(block, 100, 5, 10, matLoader);
+const terrain = new Terrain(block, blockNumber, 5, 10, matLoader);
 scene.add(terrain);
+
+//create forest 
+for (let i = -20; i < 21; i += 5) {
+    for (let j = -20; j < 21; j +=  5) {
+        let tree = new Tree(block, matLoader);
+        let rand = Math.random();
+        if (rand < 0.3 ) {
+            tree.fractalTreeGenerate(4);
+        }
+        else if (rand < 0.6) {
+            tree.randTree(THREE.MathUtils.randInt(3,4))
+        }
+        else {
+            tree.barnsleyFern(3)
+        }
+
+        let x = i + THREE.MathUtils.randInt(-3,3);
+        let z = j + THREE.MathUtils.randInt(-3,3);
+
+
+        tree.group.position.set(x, 0, z)
+        //console.log(Math.floor(terrain.yMatrix[x + 20][z + 20]))
+        //rotate tree randomly 
+        tree.group.rotateOnAxis(new THREE.Vector3(0,1,0), Math.PI/THREE.MathUtils.randFloatSpread(2))
+        tree.computBoundingBox();
+
+        scene.add(tree.group);
+
+        //for testing bounding box 
+        const helper = new THREE.Box3Helper( tree.boundingBox, 0xffff00 * Math.random() );
+        scene.add( helper );    
+        
+    }
+}
+
 
 // // Terrain parameters
 // const gridSize = 200;
@@ -132,7 +159,8 @@ scene.add(ambientLight);
 //   }
 // }
 
-var sun = new Sun(block);
+var sun = new Sun(block, blockNumber);
+
 var moon = new Moon(block);
 
 var clock = new THREE.Clock();
@@ -140,6 +168,8 @@ var clock = new THREE.Clock();
 scene.add(sun);
 scene.add(sun.helper);
 scene.add(sun.mesh);
+const shadowHelper = new THREE.CameraHelper(sun.shadow.camera);
+scene.add(shadowHelper);
 scene.add(moon);
 scene.add(moon.helper);
 scene.add(moon.mesh);
@@ -152,7 +182,7 @@ function animate() {
 
     sun.update(d);
     sun.helper.update();
-
+    shadowHelper.update();
     moon.update(d);
     moon.helper.update();
 
@@ -179,7 +209,8 @@ window.addEventListener("keyup", (event) => {
     if (event.key === "s") isMovingBackward = false;
     if (event.key === "a") isMovingLeft = false;
     if (event.key === "d") isMovingRight = false;
-});
+}); 
+
 
 // Resize handling
 window.addEventListener("resize", () => {
@@ -192,6 +223,7 @@ function keyHandler(e) {
     switch (e.key) {
         case 'm': // Q toggles shadows on and off
             sun.castShadow = !sun.castShadow;
+            console.log("sun shadow cast: ", sun.castShadow)
         break;
         case 'p': // p will speed up the speed of the day night cycle up till 4 times speed
             if (sun.speed < Math.PI / 30) {
