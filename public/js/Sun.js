@@ -24,7 +24,7 @@ export default class Sun extends THREE.DirectionalLight{
         this.castShadow = true;
         this.helper = new THREE.DirectionalLightHelper(this, 5);
 
-        this.geometry = new THREE.BoxGeometry(10,10,10);
+        this.geometry = new THREE.SphereGeometry(block * (blockNumber/20), 32, 32);
         this.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.position.set(Math.cos(Math.PI/6) * this.distance, Math.sin(Math.PI/6) * this.distance, 0);
@@ -38,8 +38,8 @@ export default class Sun extends THREE.DirectionalLight{
         this.shadow.camera.top = this.distance;
         this.shadow.camera.bottom = -this.distance;
 
-        this.shadow.mapSize.width = 2048; // Higher resolution
-        this.shadow.mapSize.height = 2048;
+        this.shadow.mapSize.width = 2048 * 2; // Higher resolution
+        this.shadow.mapSize.height = 2048 * 2;
 
         this.speed = Math.PI / 120;
     }
