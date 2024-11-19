@@ -41,6 +41,8 @@ class Tree {
         this.isBlock = false;
         // is a tree
         this.isTree = true;
+
+        this.helper = new THREE.Box3Helper(this.boundingBox, 0xffff00 * Math.random());
     }
 
     /**

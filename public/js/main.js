@@ -5,6 +5,7 @@ import Moon from './Moon.js';
 import Terrain from "./Terrain.js";
 import MaterialLoader from './MaterialLoader.js';
 import {Tree } from "./Tree.js"
+import Stats from 'https://unpkg.com/three@0.141.0/examples/jsm/libs/stats.module.js';
 
 const block = 1;
 const blockNumber = 50;
@@ -66,8 +67,7 @@ for (let i = -(blockNumber/2) + padding; i < blockNumber/2 - padding; i += 5) {
         treeMap.set(tree.group.id, tree);
 
         //for testing bounding box 
-        //const helper = new THREE.Box3Helper( tree.boundingBox, 0xffff00 * Math.random() );
-        //scene.add( helper );    
+        scene.add( tree.helper );    
         
     }
 }
@@ -175,14 +175,20 @@ scene.add(sun);
 scene.add(sun.helper);
 scene.add(sun.mesh);
 const shadowHelper = new THREE.CameraHelper(sun.shadow.camera);
-//scene.add(shadowHelper);
+scene.add(shadowHelper);
 scene.add(moon);
 scene.add(moon.helper);
 scene.add(moon.mesh);
 
+// Stats
+const stats = new Stats();
+document.body.appendChild(stats.dom);
+
+
 // Render loop
 function animate() {
-    requestAnimationFrame(animate);
+    stats.begin();
+
 
     var d = clock.getDelta();
 
@@ -198,7 +204,9 @@ function animate() {
     // updateOffsets();
     // updateCameraPosition();
 
+    stats.end();
     renderer.render(scene, camera);
+    requestAnimationFrame(animate);
 }
 
 animate();
@@ -241,6 +249,14 @@ function keyHandler(e) {
             if (sun.speed > Math.PI / 480) {
                 sun.speed /= 2;
                 moon.speed /= 2;
+            }
+        break;
+        case 'h': // h will toggle the helper for everything
+            sun.helper.visible = !sun.helper.visible;
+            moon.helper.visible = !moon.helper.visible;
+            shadowHelper.visible = !shadowHelper.visible;
+            for (let tree of treeMap.values()) {
+                tree.helper.visible = !tree.helper.visible;
             }
         break;
     }
