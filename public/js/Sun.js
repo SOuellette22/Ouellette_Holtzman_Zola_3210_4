@@ -24,8 +24,10 @@ export default class Sun extends THREE.DirectionalLight{
         this.castShadow = true;
         this.helper = new THREE.DirectionalLightHelper(this, 5);
 
-        this.geometry = new THREE.SphereGeometry(block * (blockNumber/20), 32, 32);
-        this.material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+        this.geometry = new THREE.SphereGeometry(block * (blockNumber/10), 32, 32);
+        const loader = new THREE.TextureLoader();
+        this.material = new THREE.MeshBasicMaterial({ color: 0xffffff, map: loader.load("public/textures/sunmap.jpg")});
+        
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.position.set(Math.cos(Math.PI/6) * this.distance, Math.sin(Math.PI/6) * this.distance, 0);
         // this.mesh.position.set(this.distance, 0, 0);
