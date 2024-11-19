@@ -21,6 +21,14 @@ export default class Moon extends THREE.DirectionalLight{
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         this.mesh.position.set(-Math.cos(Math.PI/6) * this.distance, -Math.sin(Math.PI/6) * this.distance, 0);
 
+        //please note this code is from chatGPT and should be reviewed it does seem to fix the shadow issues -seth
+        this.shadow.camera.near = 1;  // Distance to the near clipping plane
+        this.shadow.camera.far = this.distance * 2;  // Ensure it encompasses your scene
+        this.shadow.camera.left = -this.distance;
+        this.shadow.camera.right = this.distance;
+        this.shadow.camera.top = this.distance;
+        this.shadow.camera.bottom = -this.distance;
+
         this.speed = Math.PI / 120;
     }
 
