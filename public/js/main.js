@@ -10,7 +10,15 @@ import Stats from 'https://unpkg.com/three@0.141.0/examples/jsm/libs/stats.modul
 const block = 1;
 const blockNumber = 50;
 const padding = 3;
+const walkSpeed = 5; 
+const lookSpeed = 0.002; 
 
+let isMovingForward = false;
+let isMovingBackward = false;
+let isMovingLeft = false;
+let isMovingRight = false;
+
+const velocity = new THREE.Vector3();
 const treeMap = new Map();
 
 // Set up the scene, camera, and renderer
@@ -24,8 +32,8 @@ const camera = new THREE.PerspectiveCamera(
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 camera.position.set(0, 10, 30);
 
-const controls = new OrbitControls(camera, renderer.domElement);
-controls.update();
+//const controls = new OrbitControls(camera, renderer.domElement);
+//controls.update();
 
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
@@ -94,32 +102,56 @@ scene.add(moon.mesh);
 const stats = new Stats();
 document.body.appendChild(stats.dom);
 
+//Pointer lock for mouse look
+document.body.addEventListener("click", () => {
+    renderer.domElement.requestPointerLock();
+});
 
-// Render loop
-function animate() {
-    stats.begin();
+document.addEventListener("pointerlockchange", () => {
+    if (document.pointerLockElement === renderer.domElement) {
+        console.log("Pointer locked.");
+    } else {
+        console.log("Pointer unlocked.");
+    }
+});
 
+document.addEventListener("mousemove", (event) => {
+    if (document.pointerLockElement === renderer.domElement) {
+        camera.rotation.y -= event.movementX * lookSpeed;
+        camera.rotation.x -= event.movementY * lookSpeed;
+        camera.rotation.x = Math.max(
+            -Math.PI / 2,
+            Math.min(Math.PI / 2, camera.rotation.x)
+        );
+    }
+});
 
-    var d = clock.getDelta();
+// Keydown and keyup events
+window.addEventListener("keydown", (event) => {
+    switch (event.key) {
+        case "w": isMovingForward = true; break;
+        case "s": isMovingBackward = true; break;
+        case "a": isMovingLeft = true; break;
+        case "d": isMovingRight = true; break;
+    }
+});
 
-    sun.update(d);
-    sun.helper.update();
-    shadowHelper.update();
-    moon.update(d);
-    moon.helper.update();
+window.addEventListener("keyup", (event) => {
+    switch (event.key) {
+        case "w": isMovingForward = false; break;
+        case "s": isMovingBackward = false; break;
+        case "a": isMovingLeft = false; break;
+        case "d": isMovingRight = false; break;
+    }
+});
 
-    updateCameraMovement(delta);
+// Resize handling
+window.addEventListener("resize", () => {
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+});
 
-    controls.update();
-
-    // updateTerrain();
-    // updateOffsets();
-    // updateCameraPosition();
-
-    stats.end();
-    renderer.render(scene, camera);
-    requestAnimationFrame(animate);
-}
 // Update camera movement logic
 function updateCameraMovement(delta) {
     velocity.set(0, 0, 0);
@@ -132,10 +164,10 @@ function updateCameraMovement(delta) {
 
     // Apply direction to velocity
     const direction = new THREE.Vector3();
-    camera.getWorldDirection(direction); 
+    camera.getWorldDirection(direction);
     const right = new THREE.Vector3().crossVectors(camera.up, direction).normalize();
 
-    const forward = new THREE.Vector3().copy(direction).setY(0).normalize(); 
+    const forward = new THREE.Vector3().copy(direction).setY(0).normalize();
     const strafe = new THREE.Vector3().copy(right).setY(0).normalize();
 
     // Combine forward and strafe velocity
@@ -143,36 +175,8 @@ function updateCameraMovement(delta) {
         .addScaledVector(forward, velocity.z)
         .addScaledVector(strafe, velocity.x);
 
-    camera.position.add(movement); 
+    camera.position.add(movement);
 }
-
-
-animate();
-
-// Pointer lock controls
-document.body.addEventListener('click', () => {
-    renderer.domElement.requestPointerLock();
-});
-
-document.addEventListener('pointerlockchange', () => {
-    if (document.pointerLockElement === renderer.domElement) {
-        console.log('Pointer locked.');
-    } else {
-        console.log('Pointer unlocked.');
-    }
-});
-
-document.addEventListener('mousemove', (event) => {
-    if (document.pointerLockElement === renderer.domElement) {
-        camera.rotation.y -= event.movementX * lookSpeed; // Horizontal rotation
-        camera.rotation.x -= event.movementY * lookSpeed; // Vertical rotation
-        camera.rotation.x = Math.max(
-            -Math.PI / 2,
-            Math.min(Math.PI / 2, camera.rotation.x)
-        ); // Clamp vertical look
-    }
-});
-
 
 // Resize handling
 window.addEventListener("resize", () => {
@@ -180,6 +184,32 @@ window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 });
+
+//Render loo[]
+function animate() {
+    stats.begin();
+    const delta = clock.getDelta();
+
+    sun.update(d);
+    sun.helper.update();
+    shadowHelper.update();
+    moon.update(d);
+    moon.helper.update();
+
+    updateCameraMovement(delta);
+
+   // controls.update();
+
+    // updateTerrain();
+    // updateOffsets();
+    // updateCameraPosition();
+
+    stats.end();
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+}
+
+animate();
 
 function keyHandler(e) {
     switch (e.key) {
@@ -209,7 +239,7 @@ function keyHandler(e) {
             break;
     }
 
-    
+
 }
 
 
