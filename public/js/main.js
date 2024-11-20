@@ -78,9 +78,6 @@ for (let i = -(blockNumber / 2) + padding; i < blockNumber / 2 - padding; i += 5
         scene.add(tree.group);
         treeMap.set(tree.group.id, tree);
 
-        //for testing bounding box 
-        scene.add(tree.helper);
-
     }
 }
 
@@ -94,12 +91,8 @@ var moon = new Moon(block, blockNumber);
 var clock = new THREE.Clock();
 
 scene.add(sun);
-scene.add(sun.helper);
 scene.add(sun.mesh);
-const shadowHelper = new THREE.CameraHelper(sun.shadow.camera);
-scene.add(shadowHelper);
 scene.add(moon);
-scene.add(moon.helper);
 scene.add(moon.mesh);
 
 // Stats
@@ -208,10 +201,7 @@ function animate() {
     var d = clock.getDelta();
 
     sun.update(d);
-    sun.helper.update();
-    shadowHelper.update();
     moon.update(d);
-    moon.helper.update();
 
     updateCameraMovement(delta);
 
@@ -225,20 +215,25 @@ function animate() {
 	raycaster.setFromCamera( pointer, camera );
 
 	// calculate objects intersecting the picking ray
-	const intersects = raycaster.intersectObjects( scene.children );
+	const firstIntersected = raycaster.intersectObjects( scene.children ).pop()
 
 	//for ( let i = 0; i < intersects.length; i ++ ) {
 		//intersects[ i ].object.material.color.set( 0xff0000 );
 	//}
 
-    if (intersects) {
+    if (firstIntersected) {
         //let tree = treeMap.get(intersects.pop())
-        console.log(intersects.pop())
-        /*
-        if (tree) {
-            console.log(tree);
+
+        if (firstIntersected.object.isMesh) {
+            let object = firstIntersected.object
+            console.log(object);
+            if (object.isBlock) {
+                console.warn("object is a block")
+                //object.glow();
+            }
+            //object.object.material.emissive.setHex(0xFF0000);
         }
-        */
+
     }
     
     stats.end();
@@ -264,14 +259,6 @@ function keyHandler(e) {
             if (sun.speed > Math.PI / 480) {
                 sun.speed /= 2;
                 moon.speed /= 2;
-            }
-            break;
-        case 'h': // h will toggle the helper for everything
-            sun.helper.visible = !sun.helper.visible;
-            moon.helper.visible = !moon.helper.visible;
-            shadowHelper.visible = !shadowHelper.visible;
-            for (let tree of treeMap.values()) {
-                tree.helper.visible = !tree.helper.visible;
             }
             break;
     }
