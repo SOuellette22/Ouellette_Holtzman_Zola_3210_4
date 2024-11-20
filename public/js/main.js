@@ -13,6 +13,9 @@ const padding = 3;
 const walkSpeed = 5; 
 const lookSpeed = 0.002; 
 
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2();
+
 let isMovingForward = false;
 let isMovingBackward = false;
 let isMovingLeft = false;
@@ -132,6 +135,10 @@ document.addEventListener("mousemove", (event) => {
 
         // Apply rotations to the camera
         camera.rotation.set(pitch, yaw, 0);
+
+        pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+	    pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
     }
 });
 
@@ -214,6 +221,26 @@ function animate() {
     // updateOffsets();
     // updateCameraPosition();
 
+    // update the picking ray with the camera and pointer position
+	raycaster.setFromCamera( pointer, camera );
+
+	// calculate objects intersecting the picking ray
+	const intersects = raycaster.intersectObjects( scene.children );
+
+	//for ( let i = 0; i < intersects.length; i ++ ) {
+		//intersects[ i ].object.material.color.set( 0xff0000 );
+	//}
+
+    if (intersects) {
+        //let tree = treeMap.get(intersects.pop())
+        console.log(intersects.pop())
+        /*
+        if (tree) {
+            console.log(tree);
+        }
+        */
+    }
+    
     stats.end();
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
