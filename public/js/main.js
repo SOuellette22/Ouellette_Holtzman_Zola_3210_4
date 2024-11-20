@@ -249,6 +249,18 @@ function keyHandler(e) {
             break;
     }
 
+// Create a center dot element
+const centerDot = document.createElement("div");
+centerDot.style.position = "absolute";
+centerDot.style.width = "8px"; 
+centerDot.style.height = "8px"; 
+centerDot.style.backgroundColor = "red"; 
+centerDot.style.borderRadius = "50%"; 
+centerDot.style.top = "50%"; 
+centerDot.style.left = "50%";
+centerDot.style.transform = "translate(-50%, -50%)"; 
+centerDot.style.pointerEvents = "none"; 
+document.body.appendChild(centerDot);
 
 }
 
