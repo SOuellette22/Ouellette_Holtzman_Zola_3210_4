@@ -103,11 +103,12 @@ scene.add(moon.mesh);
 const stats = new Stats();
 document.body.appendChild(stats.dom);
 
-//Pointer lock for mouse look
+// Enable pointer lock on click
 document.body.addEventListener("click", () => {
     renderer.domElement.requestPointerLock();
 });
 
+// Log pointer lock state changes
 document.addEventListener("pointerlockchange", () => {
     if (document.pointerLockElement === renderer.domElement) {
         console.log("Pointer locked.");
@@ -116,14 +117,21 @@ document.addEventListener("pointerlockchange", () => {
     }
 });
 
+// Variables to track rotation
+let yaw = 0; // Left/right rotation
+let pitch = 0; // Up/down rotation
+
 document.addEventListener("mousemove", (event) => {
     if (document.pointerLockElement === renderer.domElement) {
-        camera.rotation.y -= event.movementX * lookSpeed;
-        camera.rotation.x -= event.movementY * lookSpeed;
-        camera.rotation.x = Math.max(
-            -Math.PI / 2,
-            Math.min(Math.PI / 2, camera.rotation.x)
-        );
+        // Update yaw (horizontal rotation) and pitch (vertical rotation)
+        yaw += event.movementX * lookSpeed;
+        pitch += event.movementY * lookSpeed;
+
+        // Clamp pitch to avoid unnatural head movement (look up/down limit)
+       // pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
+
+        // Apply rotations to the camera
+        camera.rotation.set(pitch, yaw, 0);
     }
 });
 
@@ -186,7 +194,7 @@ window.addEventListener("resize", () => {
     camera.updateProjectionMatrix();
 });
 
-//Render loo[]
+//Render loop
 function animate() {
     stats.begin();
     const delta = clock.getDelta();
