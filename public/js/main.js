@@ -30,7 +30,8 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-camera.position.set(0, 5, 5);
+camera.position.set(0, 1.7, 5);
+camera.lookAt(0, 1.7, 0);
 
 //const controls = new OrbitControls(camera, renderer.domElement);
 //controls.update();
