@@ -30,7 +30,7 @@ const camera = new THREE.PerspectiveCamera(
     1000
 );
 const renderer = new THREE.WebGLRenderer({ antialias: true });
-camera.position.set(0, 10, 30);
+camera.position.set(0, 5, 5);
 
 //const controls = new OrbitControls(camera, renderer.domElement);
 //controls.update();
@@ -157,10 +157,10 @@ function updateCameraMovement(delta) {
     velocity.set(0, 0, 0);
 
     // Movement input handling
-    if (isMovingForward) velocity.z -= walkSpeed * delta;
-    if (isMovingBackward) velocity.z += walkSpeed * delta;
-    if (isMovingLeft) velocity.x -= walkSpeed * delta;
-    if (isMovingRight) velocity.x += walkSpeed * delta;
+    if (isMovingForward) velocity.z += walkSpeed * delta;
+    if (isMovingBackward) velocity.z -= walkSpeed * delta;
+    if (isMovingLeft) velocity.x += walkSpeed * delta;
+    if (isMovingRight) velocity.x -= walkSpeed * delta;
 
     // Apply direction to velocity
     const direction = new THREE.Vector3();
@@ -189,6 +189,7 @@ window.addEventListener("resize", () => {
 function animate() {
     stats.begin();
     const delta = clock.getDelta();
+    var d = clock.getDelta();
 
     sun.update(d);
     sun.helper.update();
