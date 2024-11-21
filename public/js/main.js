@@ -202,7 +202,6 @@ window.addEventListener("resize", () => {
 //Render loop
 function animate() {
     stats.begin();
-    const delta = clock.getDelta();
     var d = clock.getDelta();
 
     sun.update(d);
@@ -211,7 +210,7 @@ function animate() {
     moon.update(d);
     moon.helper.update();
 
-    updateCameraMovement(delta);
+    updateCameraMovement(d);
 
    // controls.update();
 
