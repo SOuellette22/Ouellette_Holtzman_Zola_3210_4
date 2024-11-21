@@ -128,7 +128,7 @@ document.addEventListener("mousemove", (event) => {
         pitch += event.movementY * lookSpeed;
 
         // Clamp pitch to avoid unnatural head movement (look up/down limit)
-       // pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
+       pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
 
         // Apply rotations to the camera
         camera.rotation.set(pitch, yaw, 0);
