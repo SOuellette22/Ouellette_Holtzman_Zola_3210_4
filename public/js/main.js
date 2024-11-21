@@ -189,6 +189,24 @@ function updateCameraMovement(delta) {
     var x= camera.position.x+(blockNumber/2); 
     var z= camera.position.z+(blockNumber/2); 
     camera.position.y=terrain.yMatrix.at(Math.round(x)).at(Math.round(z))- terrain.height+2;
+
+    if(camera.position.x > Math.floor(blockNumber-(blockNumber/2)) - 1){
+        camera.position.x= Math.floor(blockNumber-(blockNumber/2 )) - 1 
+    }
+    
+    if(camera.position.x <-Math.floor(blockNumber/2) + 1){
+        camera.position.x= -Math.floor(blockNumber/2) + 1; 
+    }
+
+    if(camera.position.z >Math.floor(blockNumber-(blockNumber/2)) - 1){
+        camera.position.z= Math.floor(blockNumber-(blockNumber/2)) - 1
+    }
+    
+    if(camera.position.z <-Math.floor(blockNumber/2) + 1){
+        camera.position.z= -Math.floor(blockNumber/2) + 1; 
+    }
+
+    console.log("Camera position: ", camera.position)
     
 }
 
