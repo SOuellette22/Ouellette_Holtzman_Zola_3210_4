@@ -185,6 +185,11 @@ function updateCameraMovement(delta) {
         .addScaledVector(strafe, velocity.x);
 
     camera.position.add(movement);
+
+    var x= camera.position.x+(blockNumber/2); 
+    var z= camera.position.z+(blockNumber/2); 
+    camera.position.y=terrain.yMatrix.at(Math.round(x)).at(Math.round(z))- terrain.height+2;
+    
 }
 
 // Resize handling
