@@ -124,7 +124,7 @@ document.addEventListener("mousemove", (event) => {
         pitch += event.movementY * lookSpeed;
 
         // Clamp pitch to avoid unnatural head movement (look up/down limit)
-       // pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
+       pitch = Math.max(-Math.PI / 2 + 0.1, Math.min(Math.PI / 2 - 0.1, pitch));
 
         // Apply rotations to the camera
         camera.rotation.set(pitch, yaw, 0);
@@ -185,6 +185,33 @@ function updateCameraMovement(delta) {
         .addScaledVector(strafe, velocity.x);
 
     camera.position.add(movement);
+
+    var x= camera.position.x+(blockNumber/2); 
+    var z= camera.position.z+(blockNumber/2); 
+    camera.position.y=terrain.yMatrix.at(Math.round(x)).at(Math.round(z))- terrain.height+2;
+
+    if(camera.position.x > Math.floor(blockNumber-(blockNumber/2)) - 1.1){
+        camera.position.x= Math.floor(blockNumber-(blockNumber/2 )) - 1.1 
+    }
+    
+    if(camera.position.x <-Math.floor(blockNumber/2) + 1){
+        camera.position.x= -Math.floor(blockNumber/2) + 1; 
+    }
+
+    if(camera.position.z >Math.floor(blockNumber-(blockNumber/2)) - 2){
+        camera.position.z= Math.floor(blockNumber-(blockNumber/2)) - 2
+    }
+    
+    if(camera.position.z <-Math.floor(blockNumber/2) + 1){
+        camera.position.z= -Math.floor(blockNumber/2) + 1; 
+    }
+
+    var x= camera.position.x+(blockNumber/2); 
+    var z= camera.position.z+(blockNumber/2); 
+    camera.position.y=terrain.yMatrix.at(Math.floor(x)).at(Math.floor(z))- terrain.height+2;
+
+    console.log("Camera position: ", camera.position)
+    
 }
 
 // Resize handling
@@ -197,13 +224,12 @@ window.addEventListener("resize", () => {
 //Render loop
 function animate() {
     stats.begin();
-    const delta = clock.getDelta();
     var d = clock.getDelta();
 
     sun.update(d);
     moon.update(d);
 
-    updateCameraMovement(delta);
+    updateCameraMovement(d);
 
    // controls.update();
 
