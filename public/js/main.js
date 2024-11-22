@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'https://unpkg.com/three@0.141.0/examples/jsm/controls/OrbitControls.js';
 import Sun from './Sun.js';
 import Moon from './Moon.js';
 import Terrain from "./Terrain.js";
@@ -14,7 +13,7 @@ const walkSpeed = 5;
 const lookSpeed = 0.002; 
 
 const raycaster = new THREE.Raycaster();
-const pointer = new THREE.Vector2();
+const pointer = new THREE.Vector2(0,0);
 
 let isMovingForward = false;
 let isMovingBackward = false;
@@ -47,7 +46,6 @@ const matLoader = new MaterialLoader();
 const terrain = new Terrain(block, blockNumber, 5, 10, matLoader);
 scene.add(terrain);
 
-console.log(terrain.yMatrix);
 
 //create forest 
 for (let i = -(blockNumber / 2) + padding; i < blockNumber / 2 - padding; i += 5) {
@@ -66,7 +64,6 @@ for (let i = -(blockNumber / 2) + padding; i < blockNumber / 2 - padding; i += 5
 
         let x = i + THREE.MathUtils.randInt(-padding, padding);
         let z = j + THREE.MathUtils.randInt(-padding, padding);
-        console.log("x", x, "z", z)
         let y = terrain.yMatrix[x + blockNumber / 2][z + blockNumber / 2]
 
         tree.group.position.set(x, Math.floor(y) - 10, z)
@@ -128,10 +125,6 @@ document.addEventListener("mousemove", (event) => {
 
         // Apply rotations to the camera
         camera.rotation.set(pitch, yaw, 0);
-
-        pointer.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-	    pointer.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
     }
 });
 
@@ -167,7 +160,7 @@ function updateCameraMovement(delta) {
 
     // Movement input handling
     if (isMovingForward) velocity.z += walkSpeed * delta;
-    if (isMovingBackward) velocity.z -= walkSpeed * delta;
+    if (isMovingBackward) velocity.z += walkSpeed * delta;
     if (isMovingLeft) velocity.x += walkSpeed * delta;
     if (isMovingRight) velocity.x -= walkSpeed * delta;
 
@@ -209,9 +202,6 @@ function updateCameraMovement(delta) {
     var x= camera.position.x+(blockNumber/2); 
     var z= camera.position.z+(blockNumber/2); 
     camera.position.y=terrain.yMatrix.at(Math.floor(x)).at(Math.floor(z))- terrain.height+2;
-
-    console.log("Camera position: ", camera.position)
-    
 }
 
 // Resize handling
@@ -220,6 +210,9 @@ window.addEventListener("resize", () => {
     camera.aspect = window.innerWidth / window.innerHeight;
     camera.updateProjectionMatrix();
 });
+
+
+let selectedObject;
 
 //Render loop
 function animate() {
@@ -242,26 +235,25 @@ function animate() {
 
 	// calculate objects intersecting the picking ray
 	const firstIntersected = raycaster.intersectObjects( scene.children ).pop()
-
-	//for ( let i = 0; i < intersects.length; i ++ ) {
-		//intersects[ i ].object.material.color.set( 0xff0000 );
-	//}
-
-    if (firstIntersected) {
-        //let tree = treeMap.get(intersects.pop())
-
-        if (firstIntersected.object.isMesh) {
-            let object = firstIntersected.object
-            console.log(object);
-            if (object.isBlock) {
-                console.warn("object is a block")
-                //object.glow();
-            }
-            //object.object.material.emissive.setHex(0xFF0000);
+    //if intersected object 
+    if (firstIntersected && firstIntersected.object && firstIntersected.object.isMesh) {
+        if (selectedObject) {
+            selectedObject.material.emissive = new THREE.Color(0x000000);
         }
-
+        console.log(firstIntersected.object)
+        if (firstIntersected.object.isBlock && Object.getPrototypeOf(firstIntersected.object.material) === Array.prototype) {
+            selectedObject = firstIntersected.object
+            for (let mat of firstIntersected.object.material) {
+                //mat.emissive = new THREE.Color(0xFF0000);
+            }
+        }
+        else if (firstIntersected.object.material) {
+            selectedObject = firstIntersected.object;
+            console.log("Highlighting tree")
+            firstIntersected.object.material.emissive = new THREE.Color(0xFF0000);
+        }
     }
-    
+
     stats.end();
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
@@ -288,6 +280,8 @@ function keyHandler(e) {
             }
             break;
     }
+}
+document.addEventListener("keydown", keyHandler, false);
 
 // Create a center dot element
 const centerDot = document.createElement("div");
@@ -302,7 +296,4 @@ centerDot.style.transform = "translate(-50%, -50%)";
 centerDot.style.pointerEvents = "none"; 
 document.body.appendChild(centerDot);
 
-}
 
-
-document.addEventListener("keydown", keyHandler, false);

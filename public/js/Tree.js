@@ -98,13 +98,11 @@ class Tree {
         engine.addRule("0", "1[0]0");
 
         let tree_string = engine.generate("0", iterations);
-        console.debug(tree_string)
 
         //create offsets 
         let offsets = new Element(0,this.branchLength, 0)
         //loop through our grammer string 
         for (let curr_char of tree_string ) {
-            console.debug("y_offset", offsets.x, "angle: ", offsets.y)
             switch(curr_char) {
                 case "1": 
                     //draw branch and move up 
@@ -160,7 +158,6 @@ class Tree {
         engine.addRule("F", "FF", 0.8);
 
         let tree_string = engine.generate("X", iterations);
-        console.debug(tree_string)
 
         let offsets = new Element(0,this.branchLength, 0)
 
@@ -221,7 +218,6 @@ class Tree {
         engine.addRule("F", "F[+F]F", 0.2)
 
         let tree_string = engine.generate("F", iterations);
-        console.debug(tree_string)
 
         let offsets = new Element(0,this.branchLength, 0)
 
@@ -269,7 +265,7 @@ class Tree {
     _drawBranch(offsets) {
         let geom = new THREE.CylinderGeometry( this.branchLength/4, this.branchLength/4, this.branchLength, 32 );
 
-        let new_branch = new THREE.Mesh(geom,this.branchMat);
+        let new_branch = new THREE.Mesh(geom,this.branchMat.clone());
         new_branch.castShadow = true;
         new_branch.receiveShadow = true;
         new_branch.rotateZ(THREE.MathUtils.degToRad(offsets.angle));
@@ -283,7 +279,7 @@ class Tree {
     _drawLeaf(offsets) {
         let geom = new THREE.CylinderGeometry( this.branchLength/4, this.branchLength/4, this.branchLength, 32 );
 
-        let new_branch = new THREE.Mesh(geom,this.leafMat);
+        let new_branch = new THREE.Mesh(geom,this.leafMat.clone());
 
         new_branch.rotateZ(THREE.MathUtils.degToRad(offsets.angle));
         new_branch.position.set(offsets.x,offsets.y,0);
