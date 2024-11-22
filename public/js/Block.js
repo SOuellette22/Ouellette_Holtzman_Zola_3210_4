@@ -21,6 +21,7 @@ export default class Block extends THREE.Mesh {
         this.isBedrock = false;
 
         this.isBlock = true;
+        this.castShadow = true;
     }
 
     /**
