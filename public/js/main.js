@@ -98,7 +98,12 @@ document.body.appendChild(stats.dom);
 
 // Enable pointer lock on click
 document.body.addEventListener("click", () => {
-    renderer.domElement.requestPointerLock();
+    if (document.pointerLockElement === renderer.domElement) {
+        selectedObject.parent.remove(selectedObject)
+    }else {
+        renderer.domElement.requestPointerLock();
+    }
+    
 });
 
 // Log pointer lock state changes
@@ -236,9 +241,16 @@ function animate() {
 
     // update the picking ray with the camera and pointer position
 	raycaster.setFromCamera( pointer, camera );
-
+    let firstIntersected;
+    
 	// calculate objects intersecting the picking ray
-	const firstIntersected = raycaster.intersectObjects( scene.children ).pop()
+    for (let intersectedObj of raycaster.intersectObjects( scene.children)) {
+        if (intersectedObj && intersectedObj.object && intersectedObj.object.isMesh) {
+            firstIntersected = intersectedObj;
+            break;
+        }
+    }
+
     //if intersected object 
     if (firstIntersected && firstIntersected.object && firstIntersected.object.isMesh) {
         if (selectedObject) {
