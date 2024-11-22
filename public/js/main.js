@@ -220,8 +220,37 @@ window.addEventListener("resize", () => {
     camera.updateProjectionMatrix();
 });
 
-
 let selectedObject;
+
+
+function highlightObject(object) {
+    console.log(object)
+       //if intersected object 
+    if (selectedObject) {
+        //grass block has multiple textures so we should loop through them 
+        if (Object.getPrototypeOf(selectedObject.material) === Array.prototype) {
+            for (let mat of selectedObject.material) {
+                mat.emissive = new THREE.Color(0x000000);
+            }
+        }
+        else {
+            selectedObject.material.emissive = new THREE.Color(0x000000);
+        }
+    }
+    //console.log(firstIntersected.object)
+    if (object.isBlock && Object.getPrototypeOf(object.material) === Array.prototype) {
+        selectedObject = object
+        //grass block has multiple textures so we should loop through them 
+        for (let mat of object.material) {
+            mat.emissive = new THREE.Color(0xFF0000);
+        }
+    }
+    else if (object.material) {
+        selectedObject = object;
+        //console.log("Highlighting tree")
+        object.material.emissive = new THREE.Color(0xFF0000);
+    }
+}
 
 //Render loop
 function animate() {
@@ -246,35 +275,9 @@ function animate() {
 	// calculate objects intersecting the picking ray
     for (let intersectedObj of raycaster.intersectObjects( scene.children)) {
         if (intersectedObj && intersectedObj.object && intersectedObj.object.isMesh) {
-            firstIntersected = intersectedObj;
+            highlightObject(intersectedObj.object)
             break;
         }
-    }
-
-    //if intersected object 
-    if (selectedObject) {
-        //grass block has multiple textures so we should loop through them 
-        if (Object.getPrototypeOf(selectedObject.material) === Array.prototype) {
-            for (let mat of selectedObject.material) {
-                mat.emissive = new THREE.Color(0x000000);
-            }
-        }
-        else {
-            selectedObject.material.emissive = new THREE.Color(0x000000);
-        }
-    }
-    //console.log(firstIntersected.object)
-    if (firstIntersected.object.isBlock && Object.getPrototypeOf(firstIntersected.object.material) === Array.prototype) {
-        selectedObject = firstIntersected.object
-        //grass block has multiple textures so we should loop through them 
-        for (let mat of selectedObject.material) {
-            mat.emissive = new THREE.Color(0xFF0000);
-        }
-    }
-    else if (firstIntersected.object.material) {
-        selectedObject = firstIntersected.object;
-        //console.log("Highlighting tree")
-        firstIntersected.object.material.emissive = new THREE.Color(0xFF0000);
     }
 
     stats.end();
