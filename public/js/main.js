@@ -224,8 +224,7 @@ let selectedObject;
 
 
 function highlightObject(object) {
-    console.log(object)
-       //if intersected object 
+    //if intersected object 
     if (selectedObject) {
         //grass block has multiple textures so we should loop through them 
         if (Object.getPrototypeOf(selectedObject.material) === Array.prototype) {
@@ -242,17 +241,18 @@ function highlightObject(object) {
         selectedObject = object
         //grass block has multiple textures so we should loop through them 
         for (let mat of object.material) {
-            mat.emissive = new THREE.Color(0xFF0000);
+            mat.emissive = new THREE.Color(0x505050);
         }
     }
     else if (object.material) {
         selectedObject = object;
+        console.log(object);
         //console.log("Highlighting tree")
-        object.material.emissive = new THREE.Color(0xFF0000);
+        object.material.emissive = new THREE.Color(0x505050);
     }
 }
 
-//Render loop
+//Render loop 
 function animate() {
     stats.begin();
     var d = clock.getDelta();
