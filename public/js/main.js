@@ -100,6 +100,10 @@ document.body.appendChild(stats.dom);
 document.body.addEventListener("click", () => {
     if (document.pointerLockElement === renderer.domElement) {
         selectedObject.parent.remove(selectedObject)
+
+        if ( selectedObject.isBlock) {
+            terrain.update(selectedObject.position);
+        }
     }else {
         renderer.domElement.requestPointerLock();
     }
@@ -246,7 +250,6 @@ function highlightObject(object) {
     }
     else if (object.material) {
         selectedObject = object;
-        console.log(object);
         //console.log("Highlighting tree")
         object.material.emissive = new THREE.Color(0x505050);
     }
