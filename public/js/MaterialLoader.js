@@ -48,7 +48,8 @@ export default class MaterialLoader {
      * @returns {THREE.MeshPhongMaterial} returns the dirt material
      */
     getDirt() {
-        return this.dirt;
+        var mat = this.dirt;
+        return mat.clone();
     }
 
     /**
@@ -56,7 +57,11 @@ export default class MaterialLoader {
      * @returns {THREE.MeshPhongMaterial} returns the grass material
      */
     getGrass() {
-        return this.grass;
+        var mat = [];
+        for (var i = 0; i < this.grass.length; i++) {
+            mat[i] = this.grass[i].clone();
+        }
+        return mat;
     }
 
     /**
@@ -64,7 +69,8 @@ export default class MaterialLoader {
      * @returns {THREE.MeshPhongMaterial} returns the stone material
      */
     getStone() {
-        return this.stone;
+        var mat = this.stone;
+        return mat.clone();
     }
 
     /**
@@ -72,7 +78,8 @@ export default class MaterialLoader {
      * @returns {THREE.MeshPhongMaterial} returns the bedrock material
      */
     getBedrock() {
-        return this.bedrock;
+        var mat = this.bedrock;
+        return mat.clone();
     }
 
     /**
@@ -80,7 +87,8 @@ export default class MaterialLoader {
      * @returns {THREE.MeshPhongMaterial} returns the diamond material
      */
     getDiamond() {
-        return this.diamond;
+        var mat = this.diamond;
+        return mat.clone();
     }
 
     /**
@@ -88,7 +96,8 @@ export default class MaterialLoader {
      * @returns {THREE.MeshPhongMaterial} returns the iron material
      */
     getIron() {
-        return this.iron;
+        var mat = this.iron;
+        return mat.clone();
     }
 
     /**
@@ -96,7 +105,8 @@ export default class MaterialLoader {
      * @returns {THREE.MeshPhongMaterial} returns the gold material
      */
     getGold() {
-        return this.gold;
+        var mat = this.gold;
+        return mat.clone();
     }
 
     /**
@@ -104,7 +114,8 @@ export default class MaterialLoader {
      * @returns {THREE.MeshPhongMaterial} returns the coal material
      */
     getCoal() {
-        return this.coal;
+        var mat = this.coal;
+        return mat.clone();
     }
 
     getBark() {

@@ -1,5 +1,4 @@
 import * as THREE from 'three';
-import { OrbitControls } from 'https://unpkg.com/three@0.141.0/examples/jsm/controls/OrbitControls.js';
 import Sun from './Sun.js';
 import Moon from './Moon.js';
 import Terrain from "./Terrain.js";
@@ -13,13 +12,16 @@ const padding = 3;
 const walkSpeed = 5; 
 const lookSpeed = 0.002; 
 
+const raycaster = new THREE.Raycaster();
+const pointer = new THREE.Vector2(0,0);
+
 let isMovingForward = false;
 let isMovingBackward = false;
 let isMovingLeft = false;
 let isMovingRight = false;
 
 const velocity = new THREE.Vector3();
-const treeMap = new Map();
+const trees = [];
 
 // Set up the scene, camera, and renderer
 const scene = new THREE.Scene();
@@ -44,7 +46,6 @@ const matLoader = new MaterialLoader();
 const terrain = new Terrain(block, blockNumber, 5, 10, matLoader);
 scene.add(terrain);
 
-console.log(terrain.yMatrix);
 
 //create forest 
 for (let i = -(blockNumber / 2) + padding; i < blockNumber / 2 - padding; i += 5) {
@@ -63,7 +64,6 @@ for (let i = -(blockNumber / 2) + padding; i < blockNumber / 2 - padding; i += 5
 
         let x = i + THREE.MathUtils.randInt(-padding, padding);
         let z = j + THREE.MathUtils.randInt(-padding, padding);
-        console.log("x", x, "z", z)
         let y = terrain.yMatrix[x + blockNumber / 2][z + blockNumber / 2]
 
         tree.group.position.set(x, Math.floor(y) - 10, z)
@@ -73,10 +73,7 @@ for (let i = -(blockNumber / 2) + padding; i < blockNumber / 2 - padding; i += 5
         tree.computBoundingBox();
 
         scene.add(tree.group);
-        treeMap.set(tree.group.id, tree);
-
-        //for testing bounding box 
-        scene.add(tree.helper);
+        trees.push(tree);
 
     }
 }
@@ -91,12 +88,8 @@ var moon = new Moon(block, blockNumber);
 var clock = new THREE.Clock();
 
 scene.add(sun);
-scene.add(sun.helper);
 scene.add(sun.mesh);
-const shadowHelper = new THREE.CameraHelper(sun.shadow.camera);
-scene.add(shadowHelper);
 scene.add(moon);
-scene.add(moon.helper);
 scene.add(moon.mesh);
 
 // Stats
@@ -105,7 +98,19 @@ document.body.appendChild(stats.dom);
 
 // Enable pointer lock on click
 document.body.addEventListener("click", () => {
-    renderer.domElement.requestPointerLock();
+    if (document.pointerLockElement === renderer.domElement) {
+
+        if ( selectedObject.isBlock) {
+            if (!selectedObject.isBedrock) {
+                selectedObject.parent.remove(selectedObject);
+            }
+        } else {
+            selectedObject.parent.remove(selectedObject);
+        }
+    }else {
+        renderer.domElement.requestPointerLock();
+    }
+    
 });
 
 // Log pointer lock state changes
@@ -184,11 +189,8 @@ function updateCameraMovement(delta) {
         .addScaledVector(forward, velocity.z)
         .addScaledVector(strafe, velocity.x);
 
+    let oldPos = camera.position.clone();
     camera.position.add(movement);
-
-    var x= camera.position.x+(blockNumber/2); 
-    var z= camera.position.z+(blockNumber/2); 
-    camera.position.y=terrain.yMatrix.at(Math.round(x)).at(Math.round(z))- terrain.height+2;
 
     if(camera.position.x > Math.floor(blockNumber-(blockNumber/2)) - 1.1){
         camera.position.x= Math.floor(blockNumber-(blockNumber/2 )) - 1.1 
@@ -206,12 +208,16 @@ function updateCameraMovement(delta) {
         camera.position.z= -Math.floor(blockNumber/2) + 1; 
     }
 
+    for (let tree of trees) {
+        if (tree.isPointIntersecting(camera.position)) {
+            console.error("Hitting tree");
+            camera.position.set(oldPos.x, oldPos.y, oldPos.z);
+        }
+    }
+
     var x= camera.position.x+(blockNumber/2); 
     var z= camera.position.z+(blockNumber/2); 
     camera.position.y=terrain.yMatrix.at(Math.floor(x)).at(Math.floor(z))- terrain.height+2;
-
-    console.log("Camera position: ", camera.position)
-    
 }
 
 // Resize handling
@@ -221,16 +227,44 @@ window.addEventListener("resize", () => {
     camera.updateProjectionMatrix();
 });
 
-//Render loop
+let selectedObject;
+
+
+function highlightObject(object) {
+    //if intersected object 
+    if (selectedObject) {
+        //grass block has multiple textures so we should loop through them 
+        if (Object.getPrototypeOf(selectedObject.material) === Array.prototype) {
+            for (let mat of selectedObject.material) {
+                mat.emissive = new THREE.Color(0x000000);
+            }
+        }
+        else {
+            selectedObject.material.emissive = new THREE.Color(0x000000);
+        }
+    }
+    //console.log(firstIntersected.object)
+    if (object.isBlock && Object.getPrototypeOf(object.material) === Array.prototype) {
+        selectedObject = object
+        //grass block has multiple textures so we should loop through them 
+        for (let mat of object.material) {
+            mat.emissive = new THREE.Color(0x505050);
+        }
+    }
+    else if (object.material) {
+        selectedObject = object;
+        //console.log("Highlighting tree")
+        object.material.emissive = new THREE.Color(0x505050);
+    }
+}
+
+//Render loop 
 function animate() {
     stats.begin();
     var d = clock.getDelta();
 
     sun.update(d);
-    sun.helper.update();
-    shadowHelper.update();
     moon.update(d);
-    moon.helper.update();
 
     updateCameraMovement(d);
 
@@ -239,6 +273,18 @@ function animate() {
     // updateTerrain();
     // updateOffsets();
     // updateCameraPosition();
+
+    // update the picking ray with the camera and pointer position
+	raycaster.setFromCamera( pointer, camera );
+    let firstIntersected;
+    
+	// calculate objects intersecting the picking ray
+    for (let intersectedObj of raycaster.intersectObjects( scene.children)) {
+        if (intersectedObj && intersectedObj.object && intersectedObj.object.isMesh) {
+            highlightObject(intersectedObj.object)
+            break;
+        }
+    }
 
     stats.end();
     renderer.render(scene, camera);
@@ -265,15 +311,9 @@ function keyHandler(e) {
                 moon.speed /= 2;
             }
             break;
-        case 'h': // h will toggle the helper for everything
-            sun.helper.visible = !sun.helper.visible;
-            moon.helper.visible = !moon.helper.visible;
-            shadowHelper.visible = !shadowHelper.visible;
-            for (let tree of treeMap.values()) {
-                tree.helper.visible = !tree.helper.visible;
-            }
-            break;
     }
+}
+document.addEventListener("keydown", keyHandler, false);
 
 // Create a center dot element
 const centerDot = document.createElement("div");
@@ -288,7 +328,4 @@ centerDot.style.transform = "translate(-50%, -50%)";
 centerDot.style.pointerEvents = "none"; 
 document.body.appendChild(centerDot);
 
-}
 
-
-document.addEventListener("keydown", keyHandler, false);

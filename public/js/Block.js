@@ -18,7 +18,7 @@ export default class Block extends THREE.Mesh {
         this.geometry = geometry;
 
         this.receiveShadow = true;
-        this.isBedrock = false;
+        this.isGrass = false;
 
         this.isBlock = true;
         this.castShadow = true;
@@ -28,14 +28,14 @@ export default class Block extends THREE.Mesh {
      * This function will make the block glow
      */
     glow() {
-        this.material.emissive.setHex(0x505050);
+        this.material.emissive = new THREE.Color(0x505050)
     }
 
     /**
      * This function will make the block stop glowing
      */
     unglow() {
-        this.material.emissive.setHex(0x000000);
+        this.material.emissive = new THREE.Color(0x000000);
     }
 
     /**
@@ -79,6 +79,7 @@ export default class Block extends THREE.Mesh {
         } else if (y < maxY - 1) {
             return this.loader.getDirt();
         } else {
+            this.isGrass = true;
             return this.loader.getGrass();
         }
     }
