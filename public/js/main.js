@@ -21,7 +21,7 @@ let isMovingLeft = false;
 let isMovingRight = false;
 
 const velocity = new THREE.Vector3();
-const treeMap = new Map();
+const trees = [];
 
 // Set up the scene, camera, and renderer
 const scene = new THREE.Scene();
@@ -73,7 +73,7 @@ for (let i = -(blockNumber / 2) + padding; i < blockNumber / 2 - padding; i += 5
         tree.computBoundingBox();
 
         scene.add(tree.group);
-        treeMap.set(tree.group.id, tree);
+        trees.push(tree);
 
     }
 }
@@ -98,7 +98,12 @@ document.body.appendChild(stats.dom);
 
 // Enable pointer lock on click
 document.body.addEventListener("click", () => {
-    renderer.domElement.requestPointerLock();
+    if (document.pointerLockElement === renderer.domElement) {
+        selectedObject.parent.remove(selectedObject)
+    }else {
+        renderer.domElement.requestPointerLock();
+    }
+    
 });
 
 // Log pointer lock state changes
@@ -160,7 +165,7 @@ function updateCameraMovement(delta) {
 
     // Movement input handling
     if (isMovingForward) velocity.z += walkSpeed * delta;
-    if (isMovingBackward) velocity.z += walkSpeed * delta;
+    if (isMovingBackward) velocity.z -= walkSpeed * delta;
     if (isMovingLeft) velocity.x += walkSpeed * delta;
     if (isMovingRight) velocity.x -= walkSpeed * delta;
 
@@ -177,11 +182,8 @@ function updateCameraMovement(delta) {
         .addScaledVector(forward, velocity.z)
         .addScaledVector(strafe, velocity.x);
 
+    let oldPos = camera.position.clone();
     camera.position.add(movement);
-
-    var x= camera.position.x+(blockNumber/2); 
-    var z= camera.position.z+(blockNumber/2); 
-    camera.position.y=terrain.yMatrix.at(Math.round(x)).at(Math.round(z))- terrain.height+2;
 
     if(camera.position.x > Math.floor(blockNumber-(blockNumber/2)) - 1.1){
         camera.position.x= Math.floor(blockNumber-(blockNumber/2 )) - 1.1 
@@ -197,6 +199,13 @@ function updateCameraMovement(delta) {
     
     if(camera.position.z <-Math.floor(blockNumber/2) + 1){
         camera.position.z= -Math.floor(blockNumber/2) + 1; 
+    }
+
+    for (let tree of trees) {
+        if (tree.isPointIntersecting(camera.position)) {
+            console.error("Hitting tree");
+            camera.position.set(oldPos.x, oldPos.y, oldPos.z);
+        }
     }
 
     var x= camera.position.x+(blockNumber/2); 
@@ -232,15 +241,22 @@ function animate() {
 
     // update the picking ray with the camera and pointer position
 	raycaster.setFromCamera( pointer, camera );
-
+    let firstIntersected;
+    
 	// calculate objects intersecting the picking ray
-	const firstIntersected = raycaster.intersectObjects( scene.children ).pop()
+    for (let intersectedObj of raycaster.intersectObjects( scene.children)) {
+        if (intersectedObj && intersectedObj.object && intersectedObj.object.isMesh) {
+            firstIntersected = intersectedObj;
+            break;
+        }
+    }
+
     //if intersected object 
     if (firstIntersected && firstIntersected.object && firstIntersected.object.isMesh) {
         if (selectedObject) {
             selectedObject.material.emissive = new THREE.Color(0x000000);
         }
-        console.log(firstIntersected.object)
+        //console.log(firstIntersected.object)
         if (firstIntersected.object.isBlock && Object.getPrototypeOf(firstIntersected.object.material) === Array.prototype) {
             selectedObject = firstIntersected.object
             for (let mat of selectedObject.material) {
@@ -249,11 +265,15 @@ function animate() {
         }
         else if (firstIntersected.object.material) {
             selectedObject = firstIntersected.object;
-            console.log("Highlighting tree")
+            //console.log("Highlighting tree")
             firstIntersected.object.material.emissive = new THREE.Color(0xFF0000);
         }
     }
-
+    else {
+        if (selectedObject) {
+            selectedObject.material.emissive = new THREE.Color(0x000000)
+        }
+    }
     stats.end();
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
