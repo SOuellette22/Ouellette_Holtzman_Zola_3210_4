@@ -252,28 +252,31 @@ function animate() {
     }
 
     //if intersected object 
-    if (firstIntersected && firstIntersected.object && firstIntersected.object.isMesh) {
-        if (selectedObject) {
-            selectedObject.material.emissive = new THREE.Color(0x000000);
-        }
-        //console.log(firstIntersected.object)
-        if (firstIntersected.object.isBlock && Object.getPrototypeOf(firstIntersected.object.material) === Array.prototype) {
-            selectedObject = firstIntersected.object
+    if (selectedObject) {
+        //grass block has multiple textures so we should loop through them 
+        if (Object.getPrototypeOf(selectedObject.material) === Array.prototype) {
             for (let mat of selectedObject.material) {
-                mat.emissive = new THREE.Color(0xFF0000);
+                mat.emissive = new THREE.Color(0x000000);
             }
         }
-        else if (firstIntersected.object.material) {
-            selectedObject = firstIntersected.object;
-            //console.log("Highlighting tree")
-            firstIntersected.object.material.emissive = new THREE.Color(0xFF0000);
+        else {
+            selectedObject.material.emissive = new THREE.Color(0x000000);
         }
     }
-    else {
-        if (selectedObject) {
-            selectedObject.material.emissive = new THREE.Color(0x000000)
+    //console.log(firstIntersected.object)
+    if (firstIntersected.object.isBlock && Object.getPrototypeOf(firstIntersected.object.material) === Array.prototype) {
+        selectedObject = firstIntersected.object
+        //grass block has multiple textures so we should loop through them 
+        for (let mat of selectedObject.material) {
+            mat.emissive = new THREE.Color(0xFF0000);
         }
     }
+    else if (firstIntersected.object.material) {
+        selectedObject = firstIntersected.object;
+        //console.log("Highlighting tree")
+        firstIntersected.object.material.emissive = new THREE.Color(0xFF0000);
+    }
+
     stats.end();
     renderer.render(scene, camera);
     requestAnimationFrame(animate);
