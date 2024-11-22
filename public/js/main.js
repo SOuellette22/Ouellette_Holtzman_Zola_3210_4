@@ -243,8 +243,8 @@ function animate() {
         console.log(firstIntersected.object)
         if (firstIntersected.object.isBlock && Object.getPrototypeOf(firstIntersected.object.material) === Array.prototype) {
             selectedObject = firstIntersected.object
-            for (let mat of firstIntersected.object.material) {
-                //mat.emissive = new THREE.Color(0xFF0000);
+            for (let mat of selectedObject.material) {
+                mat.emissive = new THREE.Color(0xFF0000);
             }
         }
         else if (firstIntersected.object.material) {
