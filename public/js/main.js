@@ -99,10 +99,13 @@ document.body.appendChild(stats.dom);
 // Enable pointer lock on click
 document.body.addEventListener("click", () => {
     if (document.pointerLockElement === renderer.domElement) {
-        selectedObject.parent.remove(selectedObject)
 
         if ( selectedObject.isBlock) {
-            terrain.update(selectedObject.position);
+            if (!selectedObject.isBedrock) {
+                selectedObject.parent.remove(selectedObject);
+            }
+        } else {
+            selectedObject.parent.remove(selectedObject);
         }
     }else {
         renderer.domElement.requestPointerLock();

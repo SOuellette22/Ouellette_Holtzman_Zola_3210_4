@@ -18,7 +18,6 @@ export default class Block extends THREE.Mesh {
         this.geometry = geometry;
 
         this.receiveShadow = true;
-        this.isBedrock = false;
         this.isGrass = false;
 
         this.isBlock = true;
