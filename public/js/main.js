@@ -92,6 +92,14 @@ scene.add(sun.mesh);
 scene.add(moon);
 scene.add(moon.mesh);
 
+const spotlight = new THREE.SpotLight(0xffffff, 1,0,Math.PI/6);
+spotlight.castShadow = true;
+spotlight.shadow.mapSize.width = 2048;
+spotlight.shadow.mapSize.height = 2048;
+spotlight.visible = false;
+scene.add(spotlight);
+scene.add(spotlight.target);
+
 // Stats
 const stats = new Stats();
 document.body.appendChild(stats.dom);
@@ -137,6 +145,9 @@ document.addEventListener("mousemove", (event) => {
 
         // Apply rotations to the camera
         camera.rotation.set(pitch, yaw, 0);
+        var v3 = camera.getWorldDirection(new THREE.Vector3(0, 0, 0));
+        spotlight.target.position.set(camera.position.x + v3.x, camera.position.y + v3.y, camera.position.z + v3.z);
+
     }
 });
 
@@ -218,6 +229,8 @@ function updateCameraMovement(delta) {
     var x= camera.position.x+(blockNumber/2); 
     var z= camera.position.z+(blockNumber/2); 
     camera.position.y=terrain.yMatrix.at(Math.floor(x)).at(Math.floor(z))- terrain.height+2;
+    spotlight.position.set(camera.position.x, camera.position.y, camera.position.z);
+    spotlight.target.position.set(camera.position.x + direction.x, camera.position.y + direction.y, camera.position.z + direction.z);
 }
 
 // Resize handling
@@ -266,7 +279,7 @@ function animate() {
     sun.update(d);
     moon.update(d);
 
-    updateCameraMovement(d);
+    updateCameraMovement(d)
 
    // controls.update();
 
@@ -298,19 +311,22 @@ function keyHandler(e) {
         case 'm': // Q toggles shadows on and off
             sun.castShadow = !sun.castShadow;
             console.log("sun shadow cast: ", sun.castShadow)
-            break;
+        break;
         case 'p': // p will speed up the speed of the day night cycle up till 4 times speed
             if (sun.speed < Math.PI / 30) {
                 sun.speed *= 2;
                 moon.speed *= 2;
             }
-            break;
+        break;
         case 'o': // o will slow down the speed of the day night cycle down till 1/4 speed
             if (sun.speed > Math.PI / 480) {
                 sun.speed /= 2;
                 moon.speed /= 2;
             }
-            break;
+        break;
+        case 'l': // l will toggle the spotlight on and off
+            spotlight.visible = !spotlight.visible;
+        break;
     }
 }
 document.addEventListener("keydown", keyHandler, false);
