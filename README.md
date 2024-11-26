@@ -29,12 +29,12 @@ npm install three
 npx vite
 ```
 2. Keyboard shortcuts
-   w, a, s, d: are how you move around the world.
-   Clicking: the mouse on the objects that are highlighted will remove them.
-   p: will speed and the day-night cycle to 4 times the speed.
-   o: will slow down the day-night cycle to 1/4 the speed.
-   l: will turn on and off the user flashlight
-   m: will turn on and off the shadows generated from the different lights in the scene
+- w, a, s, d: are how you move around the world.
+- Clicking: the mouse on the highlighted objects will remove them.
+- p: will speed and the day-night cycle to 4 times the speed.
+- o: will slow down the day-night cycle to 1/4 the speed.
+- l: will turn on and off the user flashlight
+- m: will turn on and off the shadows generated from the different lights in the scene
 
 ----
 
